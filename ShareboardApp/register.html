@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shareboard - Crear cuenta</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="login-container">
+        <header class="header">
+            <img src="assets/logo.png" alt="Shareboard Logo" class="logo">
+            <h1>Shareboard</h1>
+        </header>
+        <div class="card">
+            <h2>Crea tu cuenta</h2>
+            <form id="registerForm">
+                <div class="input-group">
+                    <label for="displayName">Nombre visible</label>
+                    <input type="text" id="displayName" name="displayName" autofocus>
+                    <p class="validation-feedback" id="displayNameFeedback"></p>
+                </div>
+                <div class="input-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email">
+                    <p class="validation-feedback" id="emailFeedback"></p>
+                </div>
+                <div class="input-group">
+                    <label for="password">Contraseña</label>
+                    <div class="password-input-wrapper">
+                        <input type="password" id="password" name="password">
+                        <span class="password-toggle" id="passwordToggle">&#128065;</span>
+                    </div>
+                    <p class="validation-feedback" id="passwordFeedback"></p>
+                    <ul class="password-requirements" id="passwordRequirements">
+                        <li id="reqLength">8+ caracteres</li>
+                        <li id="reqUppercase">1 mayúscula</li>
+                        <li id="reqNumber">1 número</li>
+                    </ul>
+                </div>
+                <div class="input-group">
+                    <label for="confirmPassword">Repetir contraseña</label>
+                    <input type="password" id="confirmPassword" name="confirmPassword">
+                    <p class="validation-feedback" id="confirmPasswordFeedback"></p>
+                </div>
+                <button type="submit" class="btn-primary" disabled>Crear cuenta</button>
+                <p class="error-message" id="registerErrorMessage"></p>
+            </form>
+            <div class="links">
+                <a href="index.html">¿Iniciar sesión?</a>
+            </div>
+        </div>
+        <footer class="footer">
+            <p>Versión 1.0</p>
+            <p><a href="#">Aviso de privacidad</a></p>
+        </footer>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+    
+    <script src="js/firebase-config.js"></script>
+    <script src="js/register.js"></script>
+</body>
+</html>

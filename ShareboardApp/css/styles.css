@@ -1,0 +1,969 @@
+/* ------------------------------------------- */
+/* Estilos Generales (Login, Registro, Reset) */
+/* ------------------------------------------- */
+body {
+    font-family: 'Roboto', sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #f0f2f5; /* Un gris muy claro de fondo */
+    color: #333;
+    overflow-x: hidden; /* Evitar scroll horizontal accidental */
+}
+
+/* El .login-container es para las pantallas de autenticación */
+.login-container {
+    display: flex; /* Por defecto, siempre visible para las páginas de auth */
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 450px; /* Ancho máximo para el contenedor principal */
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 30px;
+    color: #333;
+}
+
+.header .logo {
+    width: 40px; /* Tamaño del logo */
+    height: 40px;
+    margin-right: 10px;
+}
+
+.header h1 {
+    font-size: 2.2em;
+    font-weight: 700;
+    margin: 0;
+}
+
+.card {
+    background-color: #fff;
+    padding: 40px;
+    border-radius: 8px; /* Bordes suaves de 8px */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); /* Sombra sutil */
+    width: 100%;
+    box-sizing: border-box;
+    text-align: center;
+}
+
+.card h2 {
+    font-size: 1.8em;
+    margin-top: 0;
+    margin-bottom: 30px;
+    color: #333;
+    font-weight: 700;
+}
+
+.input-group {
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: #555;
+}
+
+.input-group input[type="text"],
+.input-group input[type="email"],
+.input-group input[type="password"] {
+    width: calc(100% - 20px); /* Ancho completo menos padding */
+    padding: 12px 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 1em;
+    box-sizing: border-box;
+    transition: border-color 0.2s ease;
+}
+
+.input-group input:focus {
+    border-color: #8c52ff; /* Color violeta al enfocar */
+    outline: none;
+}
+
+.password-input-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.password-input-wrapper input {
+    padding-right: 40px; /* Espacio para el icono de ojo */
+}
+
+.password-toggle {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #888;
+    font-size: 1.1em;
+}
+
+.checkbox-group {
+    display: flex;
+    align-items: center;
+    margin-bottom: 25px;
+    text-align: left;
+}
+
+.checkbox-group input[type="checkbox"] {
+    margin-right: 10px;
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+}
+
+.checkbox-group label {
+    font-size: 0.95em;
+    color: #555;
+    cursor: pointer;
+}
+
+.btn-primary {
+    width: 100%;
+    padding: 14px 20px;
+    background: linear-gradient(135deg, #8c52ff, #a56eff); /* Degradado violeta */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 1.1em;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.2s ease;
+    box-shadow: 0 4px 10px rgba(140, 82, 255, 0.4);
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, #a56eff, #8c52ff); /* Invertir degradado o tono más oscuro */
+    transform: translateY(-2px);
+}
+
+.btn-primary:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 5px rgba(140, 82, 255, 0.4);
+}
+
+.btn-primary:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+    box-shadow: none;
+    transform: none;
+}
+
+.links {
+    margin-top: 25px;
+    font-size: 0.95em;
+}
+
+.links a {
+    color: #8c52ff;
+    text-decoration: none;
+    margin: 0 10px;
+    transition: color 0.2s ease;
+}
+
+.links a:hover {
+    color: #6a3dcc;
+    text-decoration: underline;
+}
+
+.footer {
+    margin-top: 40px;
+    font-size: 0.85em;
+    color: #777;
+    text-align: center;
+}
+
+.footer a {
+    color: #777;
+    text-decoration: none;
+}
+
+.footer a:hover {
+    text-decoration: underline;
+}
+
+/* Mensajes de error y feedback general */
+.error-message, .validation-feedback, .feedback-message {
+    font-size: 0.9em;
+    margin-top: 15px;
+    min-height: 20px; /* Para mantener el espacio y evitar saltos en el layout */
+    text-align: center;
+    opacity: 0; /* Por defecto oculto */
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    transform: translateY(5px);
+    padding: 0 10px; /* Pequeño padding para que no se pegue al borde */
+}
+
+.error-message.show, .validation-feedback.show, .feedback-message.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.error-message.error, .validation-feedback.error, .feedback-message.error {
+    color: #e74c3c; /* Rojo para errores */
+}
+
+.validation-feedback.success, .feedback-message.success {
+    color: #28a745; /* Verde para éxito */
+    font-weight: 500;
+}
+
+/* Estilos para requisitos de contraseña (pantalla de registro) */
+.password-requirements {
+    list-style: none;
+    padding: 0;
+    margin-top: 10px;
+    text-align: left;
+    font-size: 0.85em;
+    color: #777;
+}
+
+.password-requirements li {
+    margin-bottom: 5px;
+}
+
+.password-requirements li.valid {
+    color: #28a745; /* Verde para requisito cumplido */
+    text-decoration: line-through; /* Tachar si se cumple (opcional, para feedback visual) */
+}
+
+
+/* ------------------------------------------- */
+/* Responsividad para pantallas de Login/Registro/Reset */
+/* ------------------------------------------- */
+@media (max-width: 767px) {
+    body {
+        align-items: flex-start; /* Alinea al top en móviles */
+        padding-top: 40px; /* Pequeño espacio superior */
+        background-color: #fff; /* Fondo blanco en móviles para la vista de login */
+    }
+
+    .login-container {
+        max-width: 100%; /* Ocupa todo el ancho disponible */
+        padding: 0 20px; /* Padding horizontal */
+    }
+
+    .card {
+        box-shadow: none; /* Sin sombra en móvil para un look más "limpio" */
+        border-radius: 0; /* Sin bordes redondeados */
+        padding: 30px 20px;
+    }
+
+    .header {
+        margin-bottom: 20px;
+    }
+
+    .header h1 {
+        font-size: 2em;
+    }
+
+    .card h2 {
+        font-size: 1.6em;
+        margin-bottom: 25px;
+    }
+
+    .footer {
+        display: none; /* Ocultar footer en móvil (manejo con JS si es necesario para scroll) */
+    }
+}
+
+
+/* ------------------------------------------- */
+/* Estilos del Lienzo (Canvas) */
+/* ------------------------------------------- */
+
+/* Restablecer estilos de body para la app principal del lienzo */
+/* Esta regla solo se aplica si el body contiene .app-container */
+body:has(.app-container) {
+    display: flex;
+    flex-direction: column; /* Para que la barra superior y el contenido se apilen */
+    align-items: stretch;
+    justify-content: flex-start;
+    min-height: 100vh;
+    background-color: #f0f2f5; /* Fondo general de la app */
+    color: #333;
+    overflow: hidden; /* Evitar scroll del body */
+}
+
+/* Ocultar el .login-container SOLO CUANDO el .app-container está presente y visible */
+body:has(.app-container) .login-container {
+    display: none;
+}
+
+/* Contenedor principal de la aplicación del lienzo */
+.app-container {
+    display: flex; /* Por defecto, oculto hasta que onAuthStateChanged lo muestre */
+    flex-direction: column;
+    height: 100vh; /* Ocupa toda la altura de la vista */
+    width: 100vw; /* Ocupa todo el ancho de la vista */
+    /* Por defecto, oculto hasta que onAuthStateChanged confirme el usuario */
+    display: none; 
+}
+
+
+/* ------------------------------------------- */
+/* Barra Superior (Top Bar) del Lienzo */
+/* ------------------------------------------- */
+.top-bar {
+    height: 64px; /* Altura fija */
+    background-color: #ffffff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+    position: relative;
+    z-index: 100;
+}
+
+.top-bar-left {
+    display: flex;
+    align-items: center;
+    flex-grow: 1; /* Permite que ocupe espacio para alinear el selector */
+    justify-content: flex-start; /* Alinea logo y título a la izquierda */
+}
+
+.top-bar-left .logo {
+    width: 35px; /* Tamaño del logo en la barra superior */
+    height: 35px;
+    margin-right: 10px;
+}
+
+.top-bar-left h1 {
+    font-size: 1.6em;
+    font-weight: 700;
+    margin: 0 20px 0 0;
+    color: #333;
+}
+
+.subject-selector {
+    position: relative;
+    display: flex;
+    align-items: center;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 5px 10px;
+    background-color: #f9f9f9;
+    cursor: pointer;
+    transition: border-color 0.2s ease;
+    /* Ajuste para el centrado visual del selector dentro del espacio disponible */
+    margin-left: auto; /* Empuja el selector a la derecha si hay espacio */
+    margin-right: auto; /* Empuja el selector a la izquierda si hay espacio */
+    max-width: 200px; /* Limita el ancho del selector si el espacio es muy grande */
+}
+
+.subject-selector:hover {
+    border-color: #8c52ff;
+}
+
+.subject-selector select {
+    appearance: none; /* Eliminar estilo por defecto del select */
+    background: transparent;
+    border: none;
+    padding-right: 25px; /* Espacio para el icono de dropdown */
+    font-size: 1em;
+    cursor: pointer;
+    outline: none;
+    color: #555;
+    font-weight: 500;
+    width: 100%; /* Ocupa el ancho del contenedor */
+}
+
+.subject-selector .dropdown-icon {
+    position: absolute;
+    right: 5px;
+    font-size: 1.5em;
+    color: #888;
+    pointer-events: none; /* Permitir clic a través del icono al select */
+}
+
+.top-bar-right {
+    display: flex; /* Para alinear los botones si hay más de uno */
+    align-items: center;
+    gap: 10px; /* Espacio entre botones */
+    flex-shrink: 0; /* Evita que se encoja */
+}
+
+.top-bar-right .btn-new-subject {
+    background: linear-gradient(135deg, #8c52ff, #a56eff);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 15px;
+    font-size: 0.95em;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: background 0.3s ease, transform 0.2s ease;
+    box-shadow: 0 2px 5px rgba(140, 82, 255, 0.3);
+}
+
+.top-bar-right .btn-new-subject:hover {
+    background: linear-gradient(135deg, #a56eff, #8c52ff);
+    transform: translateY(-1px);
+}
+
+.top-bar-right .btn-new-subject:active {
+    transform: translateY(0);
+    box-shadow: 0 1px 3px rgba(140, 82, 255, 0.3);
+}
+
+/* Estilo para el botón de cerrar sesión */
+.btn-logout {
+    background-color: #f44336; /* Rojo para salir */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 15px;
+    font-size: 0.95em;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    box-shadow: 0 2px 5px rgba(244, 67, 54, 0.3);
+}
+
+.btn-logout:hover {
+    background-color: #d32f2f;
+    transform: translateY(-1px);
+}
+
+.btn-logout:active {
+    transform: translateY(0);
+    box-shadow: 0 1px 3px rgba(244, 67, 54, 0.3);
+}
+
+
+/* ------------------------------------------- */
+/* Contenido Principal (Main Content) del Lienzo */
+/* ------------------------------------------- */
+.main-content {
+    display: flex;
+    flex: 1; /* Ocupa el espacio restante verticalmente */
+    overflow: hidden; /* Para manejar el scroll interno de los paneles */
+}
+
+/* ------------------------------------------- */
+/* Panel Lateral Izquierdo (Sidebar Left) del Lienzo */
+/* ------------------------------------------- */
+.sidebar-left {
+    width: 280px; /* Ancho del panel */
+    background-color: #ffffff;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.05);
+    display: flex;
+    flex-direction: column;
+    padding: 15px;
+    border-right: 1px solid #eee;
+    transition: width 0.3s ease, transform 0.3s ease, padding 0.3s ease;
+    flex-shrink: 0;
+    overflow-y: auto;
+    position: relative; /* Para posicionar el botón de toggle */
+}
+
+.sidebar-left.collapsed {
+    width: 0;
+    padding: 0;
+    transform: translateX(-100%); /* Ocultar completamente */
+    box-shadow: none;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.sidebar-left .sidebar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.sidebar-left .sidebar-header h3 {
+    font-size: 1.2em;
+    font-weight: 600;
+    margin: 0;
+    color: #444;
+}
+
+.sidebar-left .sidebar-toggle-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 24px; /* Tamaño del icono Material Symbols */
+    color: #666;
+    transition: transform 0.3s ease;
+    padding: 5px; /* Para que sea más fácil de clickear */
+    border-radius: 50%; /* Botón redondo */
+    /* Posicionamiento para cuando el sidebar está colapsado */
+    position: absolute; /* Para que se quede en el borde */
+    right: -20px; /* Medio botón fuera del borde */
+    top: 15px;
+    background-color: #fff;
+    box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+    z-index: 10;
+    display: flex; /* Para centrar el icono */
+    align-items: center;
+    justify-content: center;
+    height: 35px; /* Ajusta el tamaño del botón */
+    width: 35px;
+}
+.sidebar-left .sidebar-toggle-btn:hover {
+    background-color: #f0f0f0;
+}
+
+.sidebar-left.collapsed .sidebar-toggle-btn {
+    transform: rotate(180deg); /* Rotar la flecha cuando colapsa */
+}
+
+
+.document-list {
+    flex: 1; /* Ocupa el espacio restante en el sidebar */
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    overflow-y: auto; /* Scroll si hay muchos documentos */
+}
+
+/* Estilos para las secciones de la lista de documentos */
+.document-list-section {
+    padding: 10px 0;
+    border-bottom: 1px solid #eee;
+    margin-bottom: 10px;
+}
+.document-list-section:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+}
+.document-list-section h4 {
+    font-size: 0.9em;
+    color: #888;
+    margin: 0 0 10px 0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+.document-list-section .document-item {
+    background-color: #f9f9f9;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    padding: 8px 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: grab;
+    margin-bottom: 5px;
+    transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.1s ease;
+}
+.document-list-section .document-item:hover {
+    background-color: #f0f0f0;
+    border-color: #ccc;
+}
+.document-list-section .document-item p {
+    margin: 0;
+    font-size: 0.9em;
+    color: #555;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.document-list-section .document-item .material-symbols-outlined {
+    font-size: 20px;
+    color: #8c52ff;
+}
+.document-list-section .empty-list-message {
+    font-size: 0.85em;
+    color: #aaa;
+    text-align: center;
+    padding: 10px 0;
+}
+
+
+/* Ocultar contenido si el sidebar está colapsado */
+.sidebar-left.collapsed .sidebar-header h3,
+.sidebar-left.collapsed .document-list-section, /* Ocultar secciones */
+.sidebar-left.collapsed .btn-upload-doc {
+    display: none;
+}
+
+
+.btn-upload-doc {
+    width: 100%;
+    background-color: #e0e0e0;
+    color: #555;
+    border: 1px dashed #ccc;
+    border-radius: 5px;
+    padding: 10px 15px;
+    margin-top: 15px;
+    font-size: 0.9em;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.btn-upload-doc:hover {
+    background-color: #d0d0d0;
+    border-color: #bbb;
+    color: #333;
+}
+.btn-upload-doc .material-symbols-outlined {
+    font-size: 20px; /* Icono para el botón */
+}
+
+
+/* ------------------------------------------- */
+/* Área del Canvas y Visor de Documentos */
+/* ------------------------------------------- */
+.canvas-area {
+    flex: 1;
+    position: relative;
+    background-color: #f8f8f8;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#mainCanvasContainer {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    /* Por defecto, mostrar el lienzo, ocultar el visor */
+    display: block; 
+}
+.document-viewer {
+    display: none; /* Por defecto oculto, se muestra con JS */
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    background-color: #fefefe;
+    overflow: hidden;
+    position: relative;
+}
+.document-viewer.active {
+    display: flex;
+}
+.document-viewer.active + #mainCanvasContainer { /* Ocultar lienzo cuando el visor está activo */
+    display: none;
+}
+
+.viewer-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+    background-color: #eee;
+    gap: 15px;
+    flex-shrink: 0; /* No dejar que se encoja */
+    border-bottom: 1px solid #ddd;
+}
+.viewer-controls button {
+    background-color: #8c52ff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 5px 10px;
+    cursor: pointer;
+    font-size: 1em;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+.viewer-controls button:hover {
+    background-color: #a56eff;
+}
+.viewer-controls #pageInfo {
+    font-weight: 500;
+    color: #555;
+}
+/* Estilo específico para el botón de cerrar el visor */
+#closeViewerBtn {
+    background-color: #f44336;
+    margin-left: auto; /* Empuja el botón cerrar a la derecha */
+}
+#closeViewerBtn:hover {
+    background-color: #d32f2f;
+}
+
+/* Contenedor del PDF.js viewer */
+#pdfViewerCanvas {
+    width: 100%;
+    height: calc(100% - 50px); /* Altura total menos la de los controles */
+    display: block;
+    overflow: auto; /* Para el scroll del PDF */
+    border: none;
+    background-color: #fdfdfd;
+}
+
+/* Botón de Capturar Página (flotante sobre el visor) */
+.capture-btn {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    background-color: #28a745; /* Verde vibrante */
+    color: white;
+    border: none;
+    border-radius: 50%; /* Botón redondo */
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2em;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(40, 167, 69, 0.4);
+    transition: background-color 0.2s ease, transform 0.2s ease;
+    z-index: 200; /* Asegurar que esté por encima de todo */
+}
+.capture-btn:hover {
+    background-color: #218838;
+    transform: translateY(-2px);
+}
+.capture-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 5px rgba(40, 167, 69, 0.4);
+}
+.capture-btn .material-symbols-outlined {
+    font-size: 32px;
+}
+
+
+/* ------------------------------------------- */
+/* Barra de Herramientas Flotante (Derecha) */
+/* ------------------------------------------- */
+.toolbar-right {
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    padding: 10px 5px;
+    gap: 8px;
+    z-index: 50; /* Por encima del canvas, pero debajo de la top-bar */
+}
+
+.toolbar-right .tool-btn {
+    background: none;
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.toolbar-right .tool-btn .material-symbols-outlined {
+    font-size: 26px; /* Tamaño de los iconos de herramienta */
+    color: #555;
+}
+
+.toolbar-right .tool-btn:hover {
+    background-color: #f0f0f0;
+}
+
+.toolbar-right .tool-btn.active {
+    background-color: #8c52ff; /* Color de herramienta activa */
+    color: white;
+}
+
+.toolbar-right .tool-btn.active .material-symbols-outlined {
+    color: white;
+}
+
+/* ------------------------------------------- */
+/* Barra Inferior (Bottom Bar) */
+/* ------------------------------------------- */
+.bottom-bar {
+    height: 40px; /* Altura fija */
+    background-color: #333;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 0.9em;
+    box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
+    z-index: 90;
+    /* Por defecto oculta, se muestra con JS */
+    display: none;
+}
+
+/* ------------------------------------------- */
+/* Responsividad para Lienzo */
+/* ------------------------------------------- */
+
+/* Tablet (768px - 1023px) */
+@media (min-width: 768px) and (max-width: 1023px) {
+    .top-bar {
+        padding: 0 15px;
+    }
+
+    .top-bar-left h1 {
+        font-size: 1.5em;
+        margin-right: 15px;
+    }
+
+    .subject-selector {
+        padding: 3px 8px;
+    }
+
+    .subject-selector select {
+        font-size: 0.95em;
+    }
+
+    .btn-new-subject {
+        padding: 8px 12px;
+        font-size: 0.9em;
+    }
+
+    .sidebar-left {
+        width: 250px;
+    }
+
+    .toolbar-right {
+        right: 10px;
+        padding: 8px 4px;
+        gap: 6px;
+    }
+
+    .toolbar-right .tool-btn {
+        padding: 8px;
+    }
+
+    .toolbar-right .tool-btn .material-symbols-outlined {
+        font-size: 24px;
+    }
+}
+
+/* Móvil (≤ 767px) */
+@media (max-width: 767px) {
+    .app-container {
+        flex-direction: column; /* Apilar elementos */
+        height: 100dvh; /* Altura para móviles */
+    }
+
+    .top-bar {
+        padding: 0 10px;
+        height: 56px; /* Altura más pequeña en móvil */
+    }
+
+    .top-bar-left h1 {
+        font-size: 1.4em;
+        margin-right: 10px;
+    }
+
+    .subject-selector {
+        display: none; /* Ocultar el select directamente en la top-bar para móvil */
+    }
+
+    .top-bar-right {
+        display: flex;
+        align-items: center;
+    }
+
+    .top-bar-right .btn-new-subject {
+        padding: 6px 10px;
+        font-size: 0.85em;
+    }
+
+    .main-content {
+        flex-direction: column; /* Apilar sidebar y canvas */
+        overflow-y: auto; /* Permitir scroll si el contenido es largo */
+    }
+
+    .sidebar-left {
+        width: 100%; /* Ancho completo en móvil */
+        height: auto; /* Altura automática */
+        max-height: 50vh; /* Máximo 50% de la pantalla */
+        border-bottom: 1px solid #eee;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        order: 1; /* Aparece primero en el flujo para el scroll */
+        padding: 10px;
+    }
+    .sidebar-left.collapsed {
+        max-height: 56px; /* Solo mostrar el header del sidebar */
+        overflow: hidden;
+        padding: 10px;
+    }
+    /* El botón de toggle en móvil para colapsar/expandir el sidebar */
+    .sidebar-left.collapsed .sidebar-toggle-btn {
+        position: relative; /* Revertir a relativo */
+        right: auto;
+        top: auto;
+        transform: rotate(0deg) !important; /* Quitar la rotación y transformación específica de desktop */
+        background: none;
+        box-shadow: none;
+        z-index: auto;
+        padding: 0;
+        height: auto;
+        width: auto;
+        display: inline-flex; /* Volver a inline-flex */
+        opacity: 1;
+        pointer-events: auto;
+    }
+
+
+    .document-list {
+        padding-top: 10px;
+    }
+
+    .canvas-area {
+        flex: 1; /* Ocupa el espacio restante */
+        order: 2; /* Después del sidebar */
+    }
+
+    .toolbar-right {
+        position: fixed; /* Barra de herramientas fija en la parte inferior */
+        bottom: 0;
+        left: 0;
+        right: 0;
+        top: auto; /* Eliminar top y transform-y */
+        transform: none;
+        flex-direction: row; /* Herramientas en fila */
+        justify-content: space-around;
+        align-items: center;
+        width: 100%;
+        padding: 10px 0;
+        border-top: 1px solid #eee;
+        border-radius: 0;
+        box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+        background-color: #ffffff;
+        z-index: 150; /* Asegurar que esté encima de todo */
+    }
+
+    .toolbar-right .tool-btn {
+        padding: 8px;
+    }
+
+    .bottom-bar {
+        position: fixed; /* Fija en la parte inferior sobre la toolbar si es necesario */
+        bottom: 60px; /* Por encima de la toolbar */
+        left: 0;
+        right: 0;
+        width: 100%;
+        height: 35px;
+        z-index: 160;
+    }
+}

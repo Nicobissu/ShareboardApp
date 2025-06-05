@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shareboard - Visor de Documentos</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf_viewer.min.css">
+</head>
+<body>
+    <div id="documentViewerPage" class="document-viewer-page">
+        <div class="viewer-controls-top">
+            <button id="backToCanvasBtn" class="viewer-btn material-symbols-outlined">arrow_back</button>
+            <span id="pageInfoTop">Página: 1 / ?</span>
+            <button id="capturePageBtnTop" class="capture-btn-top">
+                <span class="material-symbols-outlined">camera</span>
+                Capturar y Volver
+            </button>
+        </div>
+        
+        <div class="pdf-canvas-container">
+            <canvas id="pdfViewerCanvas"></canvas>
+        </div>
+
+        <div class="viewer-controls-bottom">
+            <button id="prevPageBtn" class="viewer-btn material-symbols-outlined">arrow_back</button>
+            <span id="pageInfoBottom">Página: 1 / ?</span>
+            <button id="nextPageBtn" class="viewer-btn material-symbols-outlined">arrow_forward</button>
+        </div>
+    </div>
+
+    <script src="js/pdf-viewer-page.js" type="module"></script>
+</body>
+</html>
