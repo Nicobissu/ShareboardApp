@@ -2,6 +2,7 @@
 
 import { canvas } from './canvas-core.js'; // Importa el canvas
 import { saveCanvasToHistory } from './canvas-history.js'; // Importa la función de historial
+import { currentUserId } from './canvas-persistence.js'; // Importar ID de usuario persistente
 
 // Asumimos que firebase.firestore() y firebase.storage() son globales o se pasan desde main-app.js
 const db = firebase.firestore();
@@ -13,7 +14,7 @@ export const USER_STORAGE_LIMIT_BYTES = 50 * 1024 * 1024; // Límite de 50 MB
 // --- Funciones de Gestión de Documentos (Firebase Storage y Firestore) ---
 
 // Función para actualizar el uso de almacenamiento del usuario
-export async function updateUserStorageUsage(currentUserId) {
+export async function updateUserStorageUsage() {
     if (!currentUserId) return;
     try {
         const userDocRef = db.collection('users').doc(currentUserId);
@@ -80,7 +81,7 @@ export async function uploadImageAndAddToCanvas(file, clientX, clientY) {
 }
 
 // Cargar documentos para la materia actual (ahora solo PDFs/TXT locales)
-export async function loadDocumentsForCurrentSubject(currentUserId, currentSubjectId, localFilesSection) {
+export async function loadDocumentsForCurrentSubject(currentSubjectId, localFilesSection) {
     if (!currentUserId) {
         console.warn('DocumentManager: loadDocumentsForCurrentSubject: No se pueden cargar documentos: usuario no autenticado.');
         return;

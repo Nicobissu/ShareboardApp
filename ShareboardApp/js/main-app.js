@@ -54,8 +54,8 @@ document.addEventListener('DOMContentLoaded', () => {
             initializeTools(toolBtns, isTextEditingFlagCallback); 
 
             // Cargar documentos del panel lateral (solo los locales en esta versión)
-            loadDocumentsForCurrentSubject(firebase.auth().currentUser.uid, currentSubjectId, localFilesSection);
-            updateUserStorageUsage(firebase.auth().currentUser.uid); 
+            loadDocumentsForCurrentSubject(currentSubjectId, localFilesSection);
+            updateUserStorageUsage();
 
             // Manejar la imagen capturada del visor de PDF si existe en sessionStorage
             const capturedImage = sessionStorage.getItem('capturedImage');
@@ -97,8 +97,8 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log('Main-App: Materia cambiada a:', newSubjectName, 'ID:', newSubjectId);
         alert(`Cambiando a la materia: ${newSubjectName}`);
         
-        loadCanvasState(newSubjectId); 
-        loadDocumentsForCurrentSubject(firebase.auth().currentUser.uid, newSubjectId, localFilesSection);
+        loadCanvasState(newSubjectId);
+        loadDocumentsForCurrentSubject(newSubjectId, localFilesSection);
     });
 
     newSubjectBtn.addEventListener('click', async () => {
@@ -123,7 +123,7 @@ document.addEventListener('DOMContentLoaded', () => {
             canvas.renderAll();
             saveCanvasToHistory();
             saveCanvasState();
-            loadDocumentsForCurrentSubject(firebase.auth().currentUser.uid, newSubjectId, localFilesSection);
+            loadDocumentsForCurrentSubject(newSubjectId, localFilesSection);
         }
     });
 
