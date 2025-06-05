@@ -4,7 +4,7 @@
 import { initializeCanvas, canvas, viewport } from './canvas-core.js'; 
 import { saveCanvasState, loadCanvasState, setPersistenceUserId, currentSubjectId } from './canvas-persistence.js'; 
 import { saveCanvasToHistory, undo, redo } from './canvas-history.js'; 
-import { initializeTools } from './canvas-tools.js'; // isTextEditingGlobal ya no se importa aquí
+import { initializeTools, initTools } from './canvas-tools.js'; // isTextEditingGlobal ya no se importa aquí
 import { updateUserStorageUsage, uploadImageAndAddToCanvas, loadDocumentsForCurrentSubject, handleLocalDocument, addDocumentToCanvas } from './document-manager.js';
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -42,7 +42,9 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             // Inicializar el canvas de Fabric.js
-            initializeCanvas(mainCanvasContainer); 
+            initializeCanvas(mainCanvasContainer);
+            // Proporcionar el canvas a las herramientas una vez creado
+            initTools(canvas);
             
             // Cargar el lienzo inicial y su historial
             loadCanvasState(currentSubjectId); 
@@ -199,10 +201,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // 4. Funcionalidad de la barra de herramientas (delegada a canvas-tools.js)
-    initializeTools(toolBtns, (isEditing) => {
-        isTextEditingFromTools = isEditing; 
-    }); 
+
 
     // 6. Funcionalidad de Cerrar Sesión
     logoutBtn.addEventListener('click', async () => {

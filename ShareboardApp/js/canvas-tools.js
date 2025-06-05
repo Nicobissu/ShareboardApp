@@ -1,8 +1,15 @@
 // js/canvas-tools.js
 
-import { canvas } from './canvas-core.js'; 
-import { saveCanvasToHistory, undo, redo } from './canvas-history.js'; 
-import { uploadImageAndAddToCanvas } from './document-manager.js'; 
+import { saveCanvasToHistory, undo, redo } from './canvas-history.js';
+import { uploadImageAndAddToCanvas } from './document-manager.js';
+
+// Referencia al canvas de Fabric.js proporcionada externamente
+let canvas = null;
+
+// Inicializa la referencia al canvas. Debe llamarse una vez que el lienzo esté creado.
+export function initTools(canvasInstance) {
+    canvas = canvasInstance;
+}
 
 // Bandera para controlar el modo de edición de texto (interna al módulo)
 let isTextEditingInternal = false;
