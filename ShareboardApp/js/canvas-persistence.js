@@ -77,8 +77,24 @@ export async function loadCanvasState(subjectId) {
         }
     } catch (error) {
         console.error('Persistence: Error al cargar el lienzo desde Firestore:', error);
-        if (error.code !== 'not-found' && !String(error).includes('fabric')) { 
-            alert('Error al cargar el lienzo. Reiniciando...');
+        if (error.code !== 'not-found' && !String(error).includes('fabric')) {
+            let message = '';
+            switch (error.code) {
+                case 'permission-denied':
+                    message = 'No tienes permiso para acceder a esta materia.';
+                    break;
+                case 'unavailable':
+                    message = 'Servicio no disponible. Verifica tu conexión.';
+                    break;
+                default:
+                    if (error.message && /network/i.test(error.message)) {
+                        message = `Problema de red: ${error.message}`;
+                    } else {
+                        message = `Error al cargar el lienzo (${error.code || error.message}). Reiniciando...`;
+                    }
+                    break;
+            }
+            alert(message);
         }
         canvas.clear();
         canvas.setViewportTransform([1, 0, 0, 1, 0, 0]);
