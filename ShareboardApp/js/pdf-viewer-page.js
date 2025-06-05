@@ -131,7 +131,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 const arrayBuffer = new Uint8Array(pdfData.data).buffer;
                 loadAndRenderPdf({data: arrayBuffer});
             } else if (pdfData.type === 'url') {
-                loadAndRenderPdf({url: pdfData.url});
+                const objectUrl = pdfData.url;
+                loadAndRenderPdf({url: objectUrl}).then(() => {
+                    URL.revokeObjectURL(objectUrl);
+                });
             } else {
                 console.error('PDF Viewer: Tipo de datos de PDF no reconocido en sessionStorage.');
                 alert('Error al cargar el PDF desde la sesión. Formato no reconocido.');

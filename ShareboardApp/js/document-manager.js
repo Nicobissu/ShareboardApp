@@ -217,16 +217,13 @@ export function handleLocalDocument(file, localFilesSection) {
         `;
         docElement.addEventListener('click', () => {
             if (file.type === 'application/pdf') {
-                // Almacenar el archivo PDF en sessionStorage antes de redirigir
-                const readerForSession = new FileReader();
-                readerForSession.onload = (eventSession) => {
-                    sessionStorage.setItem('currentPdfData', JSON.stringify({
-                        type: 'ArrayBuffer',
-                        data: Array.from(new Uint8Array(eventSession.target.result))
-                    }));
-                    window.location.href = 'pdf-viewer-page.html'; // Redirigir a la nueva página del visor
-                };
-                readerForSession.readAsArrayBuffer(file);
+                // Crear una URL de objeto para el PDF y almacenarla en sessionStorage
+                const blobUrl = URL.createObjectURL(file);
+                sessionStorage.setItem('currentPdfData', JSON.stringify({
+                    type: 'url',
+                    url: blobUrl
+                }));
+                window.location.href = 'pdf-viewer-page.html'; // Redirigir a la nueva página del visor
             } else if (file.type === 'text/plain') {
                 alert(`Contenido de ${file.name}:\n\n${fileUrl}`);
             } else {
