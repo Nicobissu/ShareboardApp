@@ -1,7 +1,7 @@
 // js/canvas-persistence.js
 
-import { canvas, viewport } from './canvas-core.js'; 
-import { canvasHistory, historyPointer, isRedoing, saveCanvasToHistory } from './canvas-history.js'; // Importar variables y función de historial
+import { canvas, viewport } from './canvas-core.js';
+import { saveCanvasToHistory, resetHistory } from './canvas-history.js';
 
 const db = firebase.firestore();
 
@@ -49,9 +49,7 @@ export async function loadCanvasState(subjectId) {
             
             // Reiniciar historial aquí para evitar conflictos con el historial del lienzo anterior
             // No re-declarar, solo re-inicializar los arrays/punteros
-            canvasHistory.length = 0; // Vaciar el array
-            historyPointer = -1;
-            isRedoing = false;
+            resetHistory();
 
             canvas.loadFromJSON(loadedCanvasData, () => {
                 canvas.setViewportTransform([loadedViewport.zoom, 0, 0, loadedViewport.zoom, loadedViewport.x, loadedViewport.y]);
@@ -70,9 +68,7 @@ export async function loadCanvasState(subjectId) {
             canvas.setViewportTransform([1, 0, 0, 1, 0, 0]);
             viewport.x = 0; viewport.y = 0; viewport.zoom = 1; // Resetear viewport global
             canvas.renderAll();
-            canvasHistory.length = 0; // Vaciar el array
-            historyPointer = -1;
-            isRedoing = false;
+            resetHistory();
             saveCanvasToHistory();
         }
     } catch (error) {
@@ -100,9 +96,7 @@ export async function loadCanvasState(subjectId) {
         canvas.setViewportTransform([1, 0, 0, 1, 0, 0]);
         viewport.x = 0; viewport.y = 0; viewport.zoom = 1;
         canvas.renderAll();
-        canvasHistory.length = 0;
-        historyPointer = -1;
-        isRedoing = false;
+        resetHistory();
         saveCanvasToHistory();
     }
 }

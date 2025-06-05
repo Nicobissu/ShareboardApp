@@ -5,7 +5,13 @@ import { saveCanvasState } from './canvas-persistence.js';
 
 export let canvasHistory = [];
 export let historyPointer = -1;
-export let isRedoing = false; 
+export let isRedoing = false;
+
+export function resetHistory() {
+    canvasHistory.length = 0;
+    historyPointer = -1;
+    isRedoing = false;
+}
 
 export function saveCanvasToHistory() {
     if (!canvas) {
