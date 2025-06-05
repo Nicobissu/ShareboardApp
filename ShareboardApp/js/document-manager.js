@@ -200,13 +200,13 @@ export function handleLocalDocument(file, localFilesSection) {
 
     const reader = new FileReader();
     reader.onload = (e) => {
-        const fileUrl = e.target.result;
+        const fileData = e.target.result;
 
         const docElement = document.createElement('div');
         docElement.classList.add('document-item', 'local-doc');
-        docElement.dataset.fileObject = file.type === 'application/pdf' ? 'true' : 'false'; 
-        if (file.type !== 'application/pdf') { 
-            docElement.dataset.url = fileUrl;
+        docElement.dataset.fileObject = file.type === 'application/pdf' ? 'true' : 'false';
+        if (file.type !== 'application/pdf') {
+            docElement.dataset.url = fileData;
         }
         docElement.dataset.type = file.type;
         docElement.dataset.name = file.name;
@@ -217,15 +217,15 @@ export function handleLocalDocument(file, localFilesSection) {
         `;
         docElement.addEventListener('click', () => {
             if (file.type === 'application/pdf') {
-                // Crear una URL de objeto para el PDF y almacenarla en sessionStorage
-                const blobUrl = URL.createObjectURL(file);
+                // Guardar el ArrayBuffer del PDF en sessionStorage para evitar errores con blobs
+                const byteArray = Array.from(new Uint8Array(fileData));
                 sessionStorage.setItem('currentPdfData', JSON.stringify({
-                    type: 'url',
-                    url: blobUrl
+                    type: 'ArrayBuffer',
+                    data: byteArray
                 }));
                 window.location.href = 'pdf-viewer-page.html'; // Redirigir a la nueva página del visor
             } else if (file.type === 'text/plain') {
-                alert(`Contenido de ${file.name}:\n\n${fileUrl}`);
+                alert(`Contenido de ${file.name}:\n\n${fileData}`);
             } else {
                 alert(`No hay visor integrado para este tipo de documento local: ${file.type}.`);
             }
@@ -234,6 +234,10 @@ export function handleLocalDocument(file, localFilesSection) {
         localFilesSection.querySelector('.empty-list-message')?.remove();
         localFilesSection.appendChild(docElement);
         console.log(`DocumentManager: Documento local '${file.name}' cargado para la sesión.`);
+    };
+
+    reader.onerror = () => {
+        alert('Error al leer el archivo seleccionado.');
     };
 
     if (file.type.startsWith('image/') || file.type === 'text/plain') {
