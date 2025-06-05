@@ -198,33 +198,58 @@ export function handleLocalDocument(file, localFilesSection) {
         return;
     }
 
+    if (file.type === 'application/pdf') {
+        const objectUrl = URL.createObjectURL(file);
+
+        const docElement = document.createElement('div');
+        docElement.classList.add('document-item', 'local-doc');
+        docElement.dataset.fileObject = 'true';
+        docElement.dataset.url = objectUrl;
+        docElement.dataset.type = file.type;
+        docElement.dataset.name = file.name;
+        docElement.draggable = true;
+        docElement.innerHTML = `
+            <span class="material-symbols-outlined">${getFileIcon(file.type)}</span>
+            <p>${file.name}</p>
+        `;
+        docElement.addEventListener('click', () => {
+            try {
+                sessionStorage.setItem('currentPdfData', JSON.stringify({ type: 'ObjectURL', url: objectUrl }));
+                window.location.href = 'pdf-viewer-page.html';
+            } catch (e) {
+                if (e instanceof DOMException && (e.name === 'QuotaExceededError' || e.code === 22)) {
+                    alert('No se pudo guardar el PDF en la sesión. Intenta con un PDF más pequeño.');
+                } else {
+                    console.error('DocumentManager: Error al guardar el PDF en la sesión:', e);
+                    alert('Error inesperado al guardar el PDF en la sesión.');
+                }
+            }
+        });
+
+        localFilesSection.querySelector('.empty-list-message')?.remove();
+        localFilesSection.appendChild(docElement);
+        console.log(`DocumentManager: Documento local '${file.name}' cargado para la sesión.`);
+
+        return;
+    }
+
     const reader = new FileReader();
     reader.onload = (e) => {
         const fileData = e.target.result;
 
         const docElement = document.createElement('div');
         docElement.classList.add('document-item', 'local-doc');
-        docElement.dataset.fileObject = file.type === 'application/pdf' ? 'true' : 'false';
-        if (file.type !== 'application/pdf') {
-            docElement.dataset.url = fileData;
-        }
+        docElement.dataset.fileObject = 'false';
+        docElement.dataset.url = fileData;
         docElement.dataset.type = file.type;
         docElement.dataset.name = file.name;
-        docElement.draggable = true; // Hacer el elemento arrastrable
+        docElement.draggable = true;
         docElement.innerHTML = `
             <span class="material-symbols-outlined">${getFileIcon(file.type)}</span>
             <p>${file.name}</p>
         `;
         docElement.addEventListener('click', () => {
-            if (file.type === 'application/pdf') {
-                // Guardar el ArrayBuffer del PDF en sessionStorage para evitar errores con blobs
-                const byteArray = Array.from(new Uint8Array(fileData));
-                sessionStorage.setItem('currentPdfData', JSON.stringify({
-                    type: 'ArrayBuffer',
-                    data: byteArray
-                }));
-                window.location.href = 'pdf-viewer-page.html'; // Redirigir a la nueva página del visor
-            } else if (file.type === 'text/plain') {
+            if (file.type === 'text/plain') {
                 alert(`Contenido de ${file.name}:\n\n${fileData}`);
             } else {
                 alert(`No hay visor integrado para este tipo de documento local: ${file.type}.`);
@@ -242,8 +267,6 @@ export function handleLocalDocument(file, localFilesSection) {
 
     if (file.type.startsWith('image/') || file.type === 'text/plain') {
         reader.readAsDataURL(file);
-    } else if (file.type === 'application/pdf') {
-        reader.readAsArrayBuffer(file);
     } else {
         alert('Tipo de archivo no soportado para carga local: ' + file.type);
     }

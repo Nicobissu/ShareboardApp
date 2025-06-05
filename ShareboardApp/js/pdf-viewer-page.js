@@ -159,15 +159,17 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // --- Cargar el PDF al iniciar la página ---
-    // Recuperar el ArrayBuffer de sessionStorage
     const pdfDataString = sessionStorage.getItem('currentPdfData');
     if (pdfDataString) {
+        let objectUrlToRevoke = null;
         try {
             const pdfData = JSON.parse(pdfDataString);
             if (pdfData.type === 'ArrayBuffer') {
-                // Convertir el array de vuelta a ArrayBuffer
                 const arrayBuffer = new Uint8Array(pdfData.data).buffer;
-                loadAndRenderPdf({data: arrayBuffer});
+                loadAndRenderPdf({ data: arrayBuffer });
+            } else if (pdfData.type === 'ObjectURL') {
+                objectUrlToRevoke = pdfData.url;
+                loadAndRenderPdf({ url: pdfData.url });
             } else {
                 console.error('PDF Viewer: Tipo de datos de PDF no reconocido en sessionStorage.');
                 alert('Error al cargar el PDF desde la sesión. Formato no reconocido.');
@@ -178,7 +180,10 @@ document.addEventListener('DOMContentLoaded', () => {
             alert('Error al cargar el PDF desde la sesión. Datos corruptos.');
             window.location.href = 'canvas.html';
         } finally {
-            sessionStorage.removeItem('currentPdfData'); // Limpiar después de usar
+            sessionStorage.removeItem('currentPdfData');
+            if (objectUrlToRevoke) {
+                URL.revokeObjectURL(objectUrlToRevoke);
+            }
         }
     } else {
         alert('No se encontró ningún PDF para mostrar. Volviendo al lienzo.');
