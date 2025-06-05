@@ -5,6 +5,7 @@ const firebaseConfig = {
   apiKey: "AIzaSyBmtf6F_WszWnZDRtywDFg2b_1LWfgMLOU",
   authDomain: "shareboardapp-2025.firebaseapp.com",
   projectId: "shareboardapp-2025",
+  // Updated to use the correct Firebase Storage domain
   storageBucket: "shareboardapp-2025.appspot.com",
   messagingSenderId: "156621447130",
   appId: "1:156621447130:web:4c4dc74d96616268226ae3"
