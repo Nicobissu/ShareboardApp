@@ -24,9 +24,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Verifica si un archivo existe antes de cargarlo
     async function checkFileExists(url) {
+        // Las URLs generadas con URL.createObjectURL empiezan con "blob:" y no
+        // requieren una petición adicional para verificar su existencia.
+        if (url.startsWith('blob:')) {
+            return true;
+        }
         try {
             const resp = await fetch(url, { method: 'HEAD' });
-            return resp.ok;
+            if (resp.ok) {
+                return true;
+            }
+            // Algunos servidores de desarrollo (por ejemplo, extensiones que
+            // sirven archivos locales) no permiten solicitudes HEAD y devuelven
+            // un código 405. En ese caso asumimos que el archivo existe y
+            // permitimos que PDF.js lo cargue mediante GET.
+            if (resp.status === 405) {
+                return true;
+            }
+            return false;
         } catch (e) {
             return false;
         }
