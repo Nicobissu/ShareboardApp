@@ -33,21 +33,6 @@ export function initializeCanvas(mainCanvasContainer) {
     canvas.freeDrawingBrush.color = '#000000';
     canvas.freeDrawingBrush.globalCompositeOperation = 'source-over';
 
-    // --- TEST: Añadir un rectángulo para verificar interactividad ---
-    const testRect = new fabric.Rect({
-        left: 100,
-        top: 100,
-        fill: 'rgba(255,0,0,0.5)', // Rojo semi-transparente
-        width: 80,
-        height: 80,
-        selectable: true,
-        evented: true
-    });
-    canvas.add(testRect);
-    canvas.renderAll();
-    console.log('CanvasCore: TEST: Rectángulo rojo añadido al lienzo. Intenta seleccionarlo y moverlo.');
-    // --- FIN TEST ---
-
     // Función para redimensionar el canvas
     function resizeCanvas() {
         if (mainCanvasContainer) {
