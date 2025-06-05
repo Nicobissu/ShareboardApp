@@ -16,7 +16,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let pdfDoc = null;
     let pageNum = 1;
-    let pdfRenderingContext = null;
     // Aumentar la escala de resolución para mejorar la definición (ej. 2.0 o 2.5 para más nitidez)
     let pdfCanvasResolutionScale = 2.5; 
 
@@ -87,16 +86,18 @@ document.addEventListener('DOMContentLoaded', () => {
             displayScale = viewerHeight / viewport.height;
         }
         
-        const scaledViewport = page.getViewport({ scale: displayScale }); // Viewport final para mostrar
+        const scaledViewport = page.getViewport({ scale: displayScale * pdfCanvasResolutionScale }); // Viewport final para mostrar con mayor resolución interna
 
         console.log(`PDF Viewer: Escala de visualización calculada: ${displayScale}`);
         console.log(`PDF Viewer: Viewport final (para mostrar): ${scaledViewport.width}x${scaledViewport.height}`);
 
         const canvasContext = pdfViewerCanvas.getContext('2d', { willReadFrequently: true });
         
-        // Ajustar el tamaño del canvas del PDF al viewport final escalado
+        // Ajustar el tamaño interno del canvas al viewport escalado y mantener el tamaño visual del contenedor
         pdfViewerCanvas.height = scaledViewport.height;
         pdfViewerCanvas.width = scaledViewport.width;
+        pdfViewerCanvas.style.width = `${viewerWidth}px`;
+        pdfViewerCanvas.style.height = `${viewerHeight}px`;
 
         const renderContext = {
             canvasContext: canvasContext,
