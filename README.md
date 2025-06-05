@@ -25,3 +25,10 @@ Uploads are restricted to keep storage usage reasonable:
 - Local documents loaded in the sidebar must be **10 MB or smaller**.
 
 Refer to `js/document-manager.js` for the exact checks.
+
+## Troubleshooting
+
+If loading a canvas fails you may see an alert containing a Firebase error code
+such as `permission-denied` or `unavailable`. This message now includes the
+specific code or network error from Firestore. Verify your internet connection
+and check Firestore permissions if the problem persists.
