@@ -12,6 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const capturePageBtnTop = document.getElementById('capturePageBtnTop');
     const backToCanvasBtn = document.getElementById('backToCanvasBtn');
     const pdfCanvasContainer = document.querySelector('.pdf-canvas-container'); // Contenedor del canvas PDF
+    const localPdfInput = document.getElementById('localPdfInput');
 
     let pdfDoc = null;
     let pageNum = 1;
@@ -22,9 +23,26 @@ document.addEventListener('DOMContentLoaded', () => {
     // Establecer workerSrc para PDF.js
     pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
 
+    // Verifica si un archivo existe antes de cargarlo
+    async function checkFileExists(url) {
+        try {
+            const resp = await fetch(url, { method: 'HEAD' });
+            return resp.ok;
+        } catch (e) {
+            return false;
+        }
+    }
+
     // Función para cargar y renderizar el PDF
     async function loadAndRenderPdf(loadParam) {
         try {
+            if (loadParam.url) {
+                const exists = await checkFileExists(loadParam.url);
+                if (!exists) {
+                    alert('El archivo PDF no se encontró en la ruta especificada.');
+                    return;
+                }
+            }
             pdfDoc = await pdfjsLib.getDocument(loadParam).promise;
             console.log('PDF Viewer: PDF cargado. Número de páginas:', pdfDoc.numPages);
             pageNum = 1; // Siempre empezar en la página 1 al cargar un nuevo PDF
@@ -114,10 +132,30 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
         const dataURL = pdfViewerCanvas.toDataURL('image/png');
-        
+
         // Almacenar la Data URL en sessionStorage y redirigir al lienzo
         sessionStorage.setItem('capturedImage', dataURL);
         window.location.href = 'canvas.html'; // Redirigir al lienzo
+    });
+
+    // Selección de PDF local
+    localPdfInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        if (file.type !== 'application/pdf') {
+            alert('Selecciona un archivo PDF válido.');
+            localPdfInput.value = '';
+            return;
+        }
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+            const typedArray = new Uint8Array(ev.target.result);
+            loadAndRenderPdf({ data: typedArray });
+        };
+        reader.onerror = () => {
+            alert('Error al leer el archivo seleccionado.');
+        };
+        reader.readAsArrayBuffer(file);
     });
 
     // --- Cargar el PDF al iniciar la página ---
