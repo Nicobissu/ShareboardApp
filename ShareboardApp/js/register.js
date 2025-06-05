@@ -165,7 +165,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             console.log('Usuario registrado y perfil actualizado:', user);
 
-            // Redirigir al lienzo (onAuthStateChanged en canvas.js se encargará de la redirección si no hay sesión)
+            // Redirigir al lienzo (onAuthStateChanged en main-app.js se encargará de la redirección si no hay sesión)
             alert('¡Cuenta creada! Redirigiendo al lienzo...'); // Mensaje temporal
             window.location.href = 'canvas.html'; 
 
