@@ -48,5 +48,20 @@
 
     <!-- Conexión con el backend local, sin Firebase -->
     <script src="js/login.js"></script>
+
+    <!-- ----- NUEVA SECCIÓN DE NOTAS ----- -->
+    <section id="notas">
+        <h2>Nueva nota</h2>
+        <form id="notaForm">
+            <input type="text" id="notaTexto" placeholder="Texto de la nota" required>
+            <input type="file" id="notaPdf" accept="application/pdf">
+            <button type="submit">Guardar</button>
+        </form>
+
+        <h2>Notas guardadas</h2>
+        <div id="listaNotas"></div>
+    </section>
+
+    <script src="js/notes.js"></script>
 </body>
 </html>
