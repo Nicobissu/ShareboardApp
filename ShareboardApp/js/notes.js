@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 if (nota.pdf) {
                     const enlace = document.createElement('a');
-                    enlace.href = `${BASE_URL}/uploads/${nota.pdf}`;
+                    enlace.href = `${BASE_URL}/${nota.pdf}`;
                     enlace.textContent = 'Ver PDF';
                     enlace.target = '_blank';
                     item.appendChild(enlace);

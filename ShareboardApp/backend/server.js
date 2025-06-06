@@ -11,12 +11,18 @@ app.use(cors());
 app.use(express.json());
 // Servir la aplicación web y los archivos subidos desde el mismo servidor
 app.use(express.static(path.join(__dirname, '..')));
+// Servir la carpeta de uploads directamente para acceder a los PDFs por URL
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Configuración de subida de archivos
 const storage = multer.diskStorage({
-  destination: 'uploads/',
-  filename: (req, file, cb) => cb(null, Date.now() + '-' + file.originalname)
+  destination: path.join(__dirname, 'uploads'),
+  filename: (req, file, cb) => {
+    const safeName = file.originalname
+      .replace(/\s+/g, '_')
+      .replace(/[^a-zA-Z0-9_.-]/g, '');
+    cb(null, `${Date.now()}_${safeName}`);
+  }
 });
 const upload = multer({ storage });
 
@@ -31,7 +37,7 @@ app.get('/notas', (req, res) => {
 // Crear una nueva nota con texto y archivo PDF
 app.post('/notas', upload.single('pdf'), (req, res) => {
   const { texto } = req.body;
-  const pdf = req.file ? req.file.filename : null;
+  const pdf = req.file ? path.posix.join('uploads', req.file.filename) : null;
 
   db.run('INSERT INTO notas (texto, pdf) VALUES (?, ?)', [texto, pdf], function (err) {
     if (err) return res.status(500).json({ error: err.message });
