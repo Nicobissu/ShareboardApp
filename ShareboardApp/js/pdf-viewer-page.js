@@ -31,6 +31,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // Valores mayores implican más píxeles por punto de la pantalla
     let pdfCanvasResolutionScale = 2;
 
+    // Dimensiones reales del canvas PDF para la captura
+    let currentCanvasWidth = 0;
+    let currentCanvasHeight = 0;
+
     // Tarea de renderizado actual para evitar superposiciones
     let renderTask = null;
 
@@ -120,6 +124,8 @@ document.addEventListener('DOMContentLoaded', () => {
         // Ajustar tamaño interno para alta resolución y tamaño visual sin escalado
         pdfViewerCanvas.width = renderViewport.width;
         pdfViewerCanvas.height = renderViewport.height;
+        currentCanvasWidth = renderViewport.width;
+        currentCanvasHeight = renderViewport.height;
         pdfViewerCanvas.style.width = `${displayViewport.width}px`;
         pdfViewerCanvas.style.height = `${displayViewport.height}px`;
 
@@ -161,7 +167,16 @@ document.addEventListener('DOMContentLoaded', () => {
             alert('No hay un PDF cargado en el visor para capturar.');
             return;
         }
-        const dataURL = pdfViewerCanvas.toDataURL('image/png');
+
+        // Usar las dimensiones reales del canvas PDF para asegurar una captura correcta
+        const w = currentCanvasWidth || pdfViewerCanvas.width;
+        const h = currentCanvasHeight || pdfViewerCanvas.height;
+        const captureCanvas = document.createElement('canvas');
+        captureCanvas.width = w;
+        captureCanvas.height = h;
+        const ctx = captureCanvas.getContext('2d');
+        ctx.drawImage(pdfViewerCanvas, 0, 0, w, h);
+        const dataURL = captureCanvas.toDataURL('image/png');
 
         // Almacenar la Data URL en sessionStorage y redirigir al lienzo
         sessionStorage.setItem('capturedImage', dataURL);
