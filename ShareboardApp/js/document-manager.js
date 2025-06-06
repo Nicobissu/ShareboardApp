@@ -3,7 +3,8 @@
 import { canvas } from './canvas-core.js';
 import { saveCanvasToHistory } from './canvas-history.js';
 
-const API_URL = 'http://localhost:3000/notas';
+// Utilizar una ruta relativa para funcionar en el mismo host
+const API_URL = '/notas';
 
 export async function updateUserStorageUsage() {
     // Sin backend remoto que calcule almacenamiento

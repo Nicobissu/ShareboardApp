@@ -1,5 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const API_URL = 'http://localhost:3000/notas';
+    // Usar una ruta relativa ya que el frontend y el API se sirven juntos
+    const API_URL = '/notas';
     const form = document.getElementById('notaForm');
     const lista = document.getElementById('listaNotas');
     const textoInput = document.getElementById('notaTexto');
