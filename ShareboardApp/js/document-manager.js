@@ -54,7 +54,7 @@ export async function loadDocumentsForCurrentSubject(_, localFilesSection) {
         const element = document.createElement('div');
         element.classList.add('document-item');
         element.dataset.fileObject = 'true';
-        element.dataset.url = `${BASE_URL}/uploads/${note.pdf}`;
+        element.dataset.url = `${BASE_URL}/${note.pdf}`;
         element.dataset.type = 'application/pdf';
         element.dataset.name = note.texto;
         element.draggable = true;
