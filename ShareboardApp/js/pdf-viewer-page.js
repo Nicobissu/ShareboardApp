@@ -27,7 +27,12 @@ document.addEventListener('DOMContentLoaded', () => {
     let pdfDoc = null;
     let pageNum = 1;
     // Aumentar la escala de resolución para mejorar la definición (ej. 2.0 o 2.5 para más nitidez)
-    let pdfCanvasResolutionScale = 2.5; 
+    // Escala interna para mejorar la definición del renderizado
+    // Valores mayores implican más píxeles por punto de la pantalla
+    let pdfCanvasResolutionScale = 2;
+
+    // Tarea de renderizado actual para evitar superposiciones
+    let renderTask = null;
 
     // Establecer workerSrc para PDF.js
     pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
@@ -84,65 +89,69 @@ document.addEventListener('DOMContentLoaded', () => {
     // Función para renderizar una página específica del PDF
     async function renderPage(num) {
         if (!pdfDoc) return;
+
+        // Cancelar cualquier render previo para evitar solapamientos
+        if (renderTask) {
+            renderTask.cancel();
+            try { await renderTask.promise; } catch (e) {}
+        }
+
         pageNum = num;
         if (pageNum < 1) pageNum = 1;
         if (pageNum > pdfDoc.numPages) pageNum = pdfDoc.numPages;
 
         const page = await pdfDoc.getPage(pageNum);
-        
-        // Obtener dimensiones actuales del contenedor del visor
+
+        // Dimensiones del contenedor disponible
         const viewerWidth = pdfCanvasContainer.offsetWidth;
-        const viewerHeight = pdfCanvasContainer.offsetHeight; 
-        
-        // Obtener el viewport original de la página con la escala de resolución deseada
-        // Esto es la resolución interna a la que PDF.js renderiza la página
-        const viewport = page.getViewport({ scale: pdfCanvasResolutionScale }); 
+        const viewerHeight = pdfCanvasContainer.offsetHeight;
 
-        console.log(`PDF Viewer: Viewport original (resolución interna): ${viewport.width}x${viewport.height}`);
-        console.log(`PDF Viewer: Contenedor del visor: ${viewerWidth}x${viewerHeight}`);
+        // Viewport base para conocer el tamaño natural de la página
+        const baseViewport = page.getViewport({ scale: 1 });
 
-        // Calcular la escala para ajustar la página al ancho del visor, manteniendo la proporción
-        let displayScale = viewerWidth / viewport.width; 
-        
-        // Si la página escalada por ancho es más alta que el visor, ajustar por altura también
-        // Esto asegura que la página se vea completa inicialmente sin scroll horizontal
-        if (viewport.height * displayScale > viewerHeight && viewerHeight > 0) {
-            console.log('PDF Viewer: Ajustando por altura también.');
-            displayScale = viewerHeight / viewport.height;
-        }
-        
-        const scaledViewport = page.getViewport({ scale: displayScale * pdfCanvasResolutionScale }); // Viewport final para mostrar con mayor resolución interna
+        // Calcular escala para que la página quepa completa en el contenedor
+        let scaleX = viewerWidth / baseViewport.width;
+        let scaleY = viewerHeight > 0 ? viewerHeight / baseViewport.height : scaleX;
+        let displayScale = Math.min(scaleX, scaleY);
+
+        const displayViewport = page.getViewport({ scale: displayScale });
+        const renderViewport = page.getViewport({ scale: displayScale * pdfCanvasResolutionScale });
 
         console.log(`PDF Viewer: Escala de visualización calculada: ${displayScale}`);
-        console.log(`PDF Viewer: Viewport final (para mostrar): ${scaledViewport.width}x${scaledViewport.height}`);
+        console.log(`PDF Viewer: Viewport final (para mostrar): ${displayViewport.width}x${displayViewport.height}`);
 
         const canvasContext = pdfViewerCanvas.getContext('2d', { willReadFrequently: true });
-        
-        // Ajustar el tamaño interno del canvas al viewport escalado y mantener el tamaño visual del contenedor
-        pdfViewerCanvas.height = scaledViewport.height;
-        pdfViewerCanvas.width = scaledViewport.width;
-        pdfViewerCanvas.style.width = `${viewerWidth}px`;
-        pdfViewerCanvas.style.height = `${viewerHeight}px`;
+
+        // Ajustar tamaño interno para alta resolución y tamaño visual para el contenedor
+        pdfViewerCanvas.height = renderViewport.height;
+        pdfViewerCanvas.width = renderViewport.width;
+        pdfViewerCanvas.style.width = `${displayViewport.width}px`;
+        pdfViewerCanvas.style.height = `${displayViewport.height}px`;
 
         const renderContext = {
             canvasContext: canvasContext,
-            viewport: scaledViewport // Usar el viewport final escalado
+            viewport: renderViewport
         };
-        await page.render(renderContext).promise;
+        renderTask = page.render(renderContext);
+        try {
+            await renderTask.promise;
+        } finally {
+            renderTask = null;
+        }
         pageInfoTop.textContent = `Página: ${pageNum} / ${pdfDoc.numPages}`;
         pageInfoBottom.textContent = `Página: ${pageNum} / ${pdfDoc.numPages}`;
         console.log(`PDF Viewer: Página ${pageNum} renderizada. Dimensiones del Canvas PDF: ${pdfViewerCanvas.width}x${pdfViewerCanvas.height}`);
     }
 
     // --- Event Listeners para Controles del Visor ---
-    prevPageBtn.addEventListener('click', () => {
+    prevPageBtn.addEventListener('click', async () => {
         if (pdfDoc && pageNum > 1) {
-            renderPage(pageNum - 1);
+            await renderPage(pageNum - 1);
         }
     });
-    nextPageBtn.addEventListener('click', () => {
+    nextPageBtn.addEventListener('click', async () => {
         if (pdfDoc && pageNum < pdfDoc.numPages) {
-            renderPage(pageNum + 1);
+            await renderPage(pageNum + 1);
         }
     });
 
@@ -221,7 +230,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Ajustar el tamaño del canvas del PDF al redimensionar la ventana
     window.addEventListener('resize', () => {
         if (pdfDoc) {
-            renderPage(pageNum); // Volver a renderizar la página actual con el nuevo tamaño
+            renderPage(pageNum);
         }
     });
 });
