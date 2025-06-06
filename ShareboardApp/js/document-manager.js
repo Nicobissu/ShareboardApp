@@ -11,6 +11,15 @@ const storage = firebase.storage();
 export let userStorageUsedBytes = 0; // Almacenamiento usado por el usuario en Storage
 export const USER_STORAGE_LIMIT_BYTES = 50 * 1024 * 1024; // Límite de 50 MB
 
+function arrayBufferToBase64(buffer) {
+    let binary = '';
+    const bytes = new Uint8Array(buffer);
+    for (let i = 0; i < bytes.byteLength; i++) {
+        binary += String.fromCharCode(bytes[i]);
+    }
+    return btoa(binary);
+}
+
 // --- Funciones de Gestión de Documentos (Firebase Storage y Firestore) ---
 
 // Función para actualizar el uso de almacenamiento del usuario
@@ -192,44 +201,49 @@ export function addDocumentToCanvas(fileData, clientX, clientY) {
 export function handleLocalDocument(file, localFilesSection) {
     if (!file) return;
 
-    const MAX_LOCAL_FILE_SIZE_MB = 10;
+    const MAX_LOCAL_FILE_SIZE_MB = 20;
     if (file.size > MAX_LOCAL_FILE_SIZE_MB * 1024 * 1024) {
         alert(`El documento '${file.name}' excede el tamaño máximo permitido de ${MAX_LOCAL_FILE_SIZE_MB} MB para carga local.`);
         return;
     }
 
     if (file.type === 'application/pdf') {
-        const objectUrl = URL.createObjectURL(file);
+        const reader = new FileReader();
+        reader.onload = () => {
+            const base64Data = arrayBufferToBase64(reader.result);
 
-        const docElement = document.createElement('div');
-        docElement.classList.add('document-item', 'local-doc');
-        docElement.dataset.fileObject = 'true';
-        docElement.dataset.url = objectUrl;
-        docElement.dataset.type = file.type;
-        docElement.dataset.name = file.name;
-        docElement.draggable = true;
-        docElement.innerHTML = `
-            <span class="material-symbols-outlined">${getFileIcon(file.type)}</span>
-            <p>${file.name}</p>
-        `;
-        docElement.addEventListener('click', () => {
-            try {
-                sessionStorage.setItem('currentPdfData', JSON.stringify({ type: 'ObjectURL', url: objectUrl }));
-                window.location.href = 'pdf-viewer-page.html';
-            } catch (e) {
-                if (e instanceof DOMException && (e.name === 'QuotaExceededError' || e.code === 22)) {
-                    alert('No se pudo guardar el PDF en la sesión. Intenta con un PDF más pequeño.');
-                } else {
-                    console.error('DocumentManager: Error al guardar el PDF en la sesión:', e);
-                    alert('Error inesperado al guardar el PDF en la sesión.');
+            const docElement = document.createElement('div');
+            docElement.classList.add('document-item', 'local-doc');
+            docElement.dataset.fileObject = 'false';
+            docElement.dataset.type = file.type;
+            docElement.dataset.name = file.name;
+            docElement.draggable = true;
+            docElement.innerHTML = `
+                <span class="material-symbols-outlined">${getFileIcon(file.type)}</span>
+                <p>${file.name}</p>
+            `;
+            docElement.addEventListener('click', () => {
+                try {
+                    sessionStorage.setItem('currentPdfData', JSON.stringify({ type: 'ArrayBuffer', data: base64Data }));
+                    window.location.href = 'pdf-viewer-page.html';
+                } catch (e) {
+                    if (e instanceof DOMException && (e.name === 'QuotaExceededError' || e.code === 22)) {
+                        alert('No se pudo guardar el PDF en la sesión. Intenta con un PDF más pequeño.');
+                    } else {
+                        console.error('DocumentManager: Error al guardar el PDF en la sesión:', e);
+                        alert('Error inesperado al guardar el PDF en la sesión.');
+                    }
                 }
-            }
-        });
+            });
 
-        localFilesSection.querySelector('.empty-list-message')?.remove();
-        localFilesSection.appendChild(docElement);
-        console.log(`DocumentManager: Documento local '${file.name}' cargado para la sesión.`);
-
+            localFilesSection.querySelector('.empty-list-message')?.remove();
+            localFilesSection.appendChild(docElement);
+            console.log(`DocumentManager: Documento local '${file.name}' cargado para la sesión.`);
+        };
+        reader.onerror = () => {
+            alert('Error al leer el archivo seleccionado.');
+        };
+        reader.readAsArrayBuffer(file);
         return;
     }
 

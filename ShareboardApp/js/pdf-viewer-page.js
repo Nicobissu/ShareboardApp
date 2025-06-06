@@ -3,6 +3,16 @@
 document.addEventListener('DOMContentLoaded', () => {
     console.log('PDF Viewer Page cargado y DOM completamente cargado.');
 
+    function base64ToArrayBuffer(base64) {
+        const binaryString = atob(base64);
+        const len = binaryString.length;
+        const bytes = new Uint8Array(len);
+        for (let i = 0; i < len; i++) {
+            bytes[i] = binaryString.charCodeAt(i);
+        }
+        return bytes.buffer;
+    }
+
     // Referencias a elementos del DOM del visor
     const pdfViewerCanvas = document.getElementById('pdfViewerCanvas');
     const prevPageBtn = document.getElementById('prevPageBtn');
@@ -181,7 +191,7 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             const pdfData = JSON.parse(pdfDataString);
             if (pdfData.type === 'ArrayBuffer') {
-                const arrayBuffer = new Uint8Array(pdfData.data).buffer;
+                const arrayBuffer = base64ToArrayBuffer(pdfData.data);
                 loadAndRenderPdf({ data: arrayBuffer });
             } else if (pdfData.type === 'ObjectURL') {
                 objectUrlToRevoke = pdfData.url;

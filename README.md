@@ -57,7 +57,7 @@ PDFs or capture PDF pages onto the board.
 Uploads are restricted to keep storage usage reasonable:
 
 - Images added to the canvas must be **5 MB or smaller**.
-- Local documents loaded in the sidebar must be **10 MB or smaller**.
+ - Local documents loaded in the sidebar must be **20 MB or smaller**.
 
 Refer to `js/document-manager.js` for the exact checks.
 
