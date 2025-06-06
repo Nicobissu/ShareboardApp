@@ -1,103 +1,68 @@
 // js/document-manager.js
 
-import { canvas } from './canvas-core.js'; // Importa el canvas
-import { saveCanvasToHistory } from './canvas-history.js'; // Importa la función de historial
-import { currentUserId } from './canvas-persistence.js'; // Importar ID de usuario persistente
+import { canvas } from './canvas-core.js';
+import { saveCanvasToHistory } from './canvas-history.js';
 
-// Asumimos que firebase.firestore() y firebase.storage() son globales o se pasan desde main-app.js
-const db = firebase.firestore();
-const storage = firebase.storage();
+const API_URL = 'http://localhost:3000/notas';
 
-export let userStorageUsedBytes = 0; // Almacenamiento usado por el usuario en Storage
-export const USER_STORAGE_LIMIT_BYTES = 50 * 1024 * 1024; // Límite de 50 MB
-
-function arrayBufferToBase64(buffer) {
-    let binary = '';
-    const bytes = new Uint8Array(buffer);
-    for (let i = 0; i < bytes.byteLength; i++) {
-        binary += String.fromCharCode(bytes[i]);
-    }
-    return btoa(binary);
-}
-
-// --- Funciones de Gestión de Documentos (Firebase Storage y Firestore) ---
-
-// Función para actualizar el uso de almacenamiento del usuario
 export async function updateUserStorageUsage() {
-    if (!currentUserId) return;
-    try {
-        const userDocRef = db.collection('users').doc(currentUserId);
-        const doc = await userDocRef.get();
-        if (doc.exists && doc.data().totalStorageUsedBytes !== undefined) {
-            userStorageUsedBytes = doc.data().totalStorageUsedBytes;
-        } else {
-            userStorageUsedBytes = 0;
-            await userDocRef.set({ totalStorageUsedBytes: 0 }, { merge: true }); 
-        }
-        console.log(`DocumentManager: Uso de almacenamiento del usuario: ${(userStorageUsedBytes / (1024 * 1024)).toFixed(2)} MB de ${(USER_STORAGE_LIMIT_BYTES / (1024 * 1024)).toFixed(2)} MB`);
-    }
-    catch (error) {
-        console.error('DocumentManager: Error al obtener uso de almacenamiento:', error);
-    }
+    // Sin backend remoto que calcule almacenamiento
 }
 
-// Función para subir una IMAGEN a Storage y añadirla al lienzo
 export async function uploadImageAndAddToCanvas(file, clientX, clientY) {
-    console.log('DocumentManager: Iniciando uploadImageAndAddToCanvas para:', file.name);
-    if (!currentUserId || !canvas) {
-        alert('Error: usuario no autenticado o lienzo no inicializado.');
-        return;
-    }
-    
-    if (!file.type.startsWith('image/')) {
-        alert('Solo se permite subir archivos de imagen (JPG, PNG, GIF, WEBP) al lienzo.');
-        return;
-    }
+    const reader = new FileReader();
+    reader.onload = () => {
+        addDocumentToCanvas({ url: reader.result, type: file.type, name: file.name }, clientX, clientY);
+    };
+    reader.readAsDataURL(file);
+}
 
-    const MAX_FILE_SIZE_MB_CANVAS = 5; 
-    if (file.size > MAX_FILE_SIZE_MB_CANVAS * 1024 * 1024) {
-        alert(`La imagen '${file.name}' excede el tamaño máximo permitido de ${MAX_FILE_SIZE_MB_CANVAS} MB para incrustar.`);
-        return;
-    }
-
-    if (userStorageUsedBytes + file.size > USER_STORAGE_LIMIT_BYTES) {
-        alert(`Has alcanzado tu límite de almacenamiento de ${(USER_STORAGE_LIMIT_BYTES / (1024 * 1024)).toFixed(2)} MB. No se puede subir esta imagen.`);
-        return;
-    }
-
-    const storageRef = storage.ref();
-    const fileName = `${Date.now()}_${file.name}`; 
-    const filePath = `users/${currentUserId}/files/${fileName}`; 
-    const fileRef = storageRef.child(filePath);
-
+export async function fetchServerNotes() {
     try {
-        console.log(`DocumentManager: Subiendo imagen a Storage: ${file.name}`);
-        const snapshot = await fileRef.put(file);
-        const downloadURL = await snapshot.ref.getDownloadURL();
-        
-        console.log(`DocumentManager: Imagen subida a Storage. URL: ${downloadURL}`);
-
-        userStorageUsedBytes += file.size;
-        await db.collection('users').doc(currentUserId).set({ totalStorageUsedBytes: userStorageUsedBytes }, { merge: true });
-
-        // Añadir al lienzo
-        addDocumentToCanvas({ url: downloadURL, type: file.type, name: file.name }, clientX, clientY);
-        
-    } catch (error) {
-        console.error('DocumentManager: Error al subir imagen al lienzo:', error);
-        alert(`Error al subir la imagen '${file.name}': ${error.message}`);
+        const res = await fetch(API_URL);
+        if (!res.ok) throw new Error('error');
+        return await res.json();
+    } catch (e) {
+        console.error('fetchServerNotes', e);
+        return [];
     }
 }
 
-// Cargar documentos para la materia actual (ahora solo PDFs/TXT locales)
-export async function loadDocumentsForCurrentSubject(currentSubjectId, localFilesSection) {
-    if (!currentUserId) {
-        console.warn('DocumentManager: loadDocumentsForCurrentSubject: No se pueden cargar documentos: usuario no autenticado.');
+export async function uploadPdfNote(file, texto) {
+    const formData = new FormData();
+    formData.append('texto', texto);
+    formData.append('pdf', file);
+    try {
+        await fetch(API_URL, { method: 'POST', body: formData });
+        console.log('Nota subida');
+    } catch (e) {
+        console.error('uploadPdfNote', e);
+    }
+}
+
+export async function loadDocumentsForCurrentSubject(_, localFilesSection) {
+    localFilesSection.innerHTML = '<p class="empty-list-message">Cargando...</p>';
+    const notes = await fetchServerNotes();
+    localFilesSection.innerHTML = '';
+    if (notes.length === 0) {
+        localFilesSection.innerHTML = '<p class="empty-list-message">Sin documentos.</p>';
         return;
     }
-    
-    localFilesSection.innerHTML = '';
-    localFilesSection.innerHTML = '<p class="empty-list-message">Carga un PDF o TXT para ver.</p>';
+    for (const note of notes) {
+        const element = document.createElement('div');
+        element.classList.add('document-item');
+        element.dataset.fileObject = 'true';
+        element.dataset.url = `${API_URL.replace('/notas','')}/${note.pdf}`;
+        element.dataset.type = 'application/pdf';
+        element.dataset.name = note.texto;
+        element.draggable = true;
+        element.innerHTML = `<span class="material-symbols-outlined">description</span><p>${note.texto}</p>`;
+        element.addEventListener('click', () => {
+            sessionStorage.setItem('currentPdfData', JSON.stringify({ type: 'URL', url: element.dataset.url }));
+            window.open('pdf-viewer-page.html', '_blank');
+        });
+        localFilesSection.appendChild(element);
+    }
 }
 
 export function getFileIcon(fileType) {
@@ -108,20 +73,15 @@ export function getFileIcon(fileType) {
     return 'attach_file';
 }
 
-// --- Funciones para arrastrar y soltar documentos al lienzo ---
-export function addDocumentToCanvas(fileData, clientX, clientY) { 
-    const { url, type, name, isLocalPdf } = fileData;
-    
-    const canvasRect = canvas.getElement().getBoundingClientRect();
-    const canvasX = clientX - canvasRect.left;
-    const canvasY = clientY - canvasRect.top;
-
+export function addDocumentToCanvas(fileData, clientX, clientY) {
+    const { url, type, name } = fileData;
+    const rect = canvas.getElement().getBoundingClientRect();
+    const canvasX = clientX - rect.left;
+    const canvasY = clientY - rect.top;
     const zoom = canvas.getZoom();
     const vpt = canvas.viewportTransform;
     const x = (canvasX / zoom) - (vpt[4] / zoom);
     const y = (canvasY / zoom) - (vpt[5] / zoom);
-
-    let objectToAdd;
 
     switch (type) {
         case 'image/jpeg':
@@ -129,106 +89,59 @@ export function addDocumentToCanvas(fileData, clientX, clientY) {
         case 'image/gif':
         case 'image/webp':
             fabric.Image.fromURL(url, (img) => {
-                // Escalar la imagen para que no sea demasiado grande o pequeña
-                const maxCanvasWidth = canvas.width * 0.8; // 80% del ancho del canvas
-                const maxCanvasHeight = canvas.height * 0.8; // 80% de la altura del canvas
-                let scaleFactor = 1;
-
-                if (img.width > maxCanvasWidth || img.height > maxCanvasHeight) {
-                    scaleFactor = Math.min(maxCanvasWidth / img.width, maxCanvasHeight / img.height);
+                const maxW = canvas.width * 0.8;
+                const maxH = canvas.height * 0.8;
+                let scale = 1;
+                if (img.width > maxW || img.height > maxH) {
+                    scale = Math.min(maxW / img.width, maxH / img.height);
                 }
-                
-                img.set({
-                    left: x,
-                    top: y,
-                    originX: 'left',
-                    originY: 'top',
-                    scaleX: scaleFactor, 
-                    scaleY: scaleFactor,
-                    selectable: true,
-                    evented: true
-                });
+                img.set({ left: x, top: y, originX: 'left', originY: 'top', scaleX: scale, scaleY: scale, selectable: true, evented: true });
                 canvas.add(img);
                 canvas.setActiveObject(img);
                 canvas.renderAll();
                 saveCanvasToHistory();
             }, { crossOrigin: 'anonymous' });
             break;
-        case 'application/pdf': 
-            alert('Para PDFs, no se incrustan directamente en el lienzo. Usa la herramienta de captura después de cargarlos en el visor.');
+        case 'application/pdf':
+            alert('Para PDFs usa el visor para capturar las páginas.');
             break;
         case 'text/plain':
-            const textObject = new fabric.IText(name + '\n(Haz doble clic para editar)', {
-                left: x,
-                top: y,
-                fontFamily: 'Roboto',
-                fontSize: 24,
-                fill: '#000000',
-                selectable: true,
-                editable: true
-            });
+            const textObject = new fabric.IText(name + '\n(Haz doble clic para editar)', { left: x, top: y, fontFamily: 'Roboto', fontSize: 24, fill: '#000', selectable: true, editable: true });
             canvas.add(textObject);
             canvas.setActiveObject(textObject);
             canvas.renderAll();
             saveCanvasToHistory();
             break;
-        case 'audio/mpeg': 
-        case 'audio/wav':
-        case 'audio/ogg':
-            const audioIcon = new fabric.IText('🎵 Audio: ' + name, {
-                left: x,
-                top: y,
-                fontFamily: 'Roboto',
-                fontSize: 20,
-                fill: '#000000',
-                selectable: true,
-                evented: true,
-                data: { url: url, type: 'audio' }
-            });
-            canvas.add(audioIcon);
-            canvas.setActiveObject(audioIcon);
-            canvas.renderAll();
-            saveCanvasToHistory();
-            alert('Objeto de audio añadido. En una implementación completa, esto sería un un reproductor.');
-            break;
         default:
-            alert(`Tipo de archivo no soportado para incrustar directamente en el lienzo: ${type}.`);
+            alert('Tipo de archivo no soportado: ' + type);
             break;
     }
 }
 
-// Exportamos la función para manejar documentos locales
 export function handleLocalDocument(file, localFilesSection) {
     if (!file) return;
-
     if (file.type === 'application/pdf') {
         const objectUrl = URL.createObjectURL(file);
-
         const docElement = document.createElement('div');
         docElement.classList.add('document-item', 'local-doc');
         docElement.dataset.fileObject = 'false';
         docElement.dataset.type = file.type;
         docElement.dataset.name = file.name;
         docElement.draggable = true;
-        docElement.innerHTML = `
-            <span class="material-symbols-outlined">${getFileIcon(file.type)}</span>
-            <p>${file.name}</p>
-        `;
+        docElement.innerHTML = `<span class="material-symbols-outlined">${getFileIcon(file.type)}</span><p>${file.name}</p>`;
         docElement.addEventListener('click', () => {
             sessionStorage.setItem('currentPdfData', JSON.stringify({ type: 'ObjectURL', url: objectUrl }));
             window.open('pdf-viewer-page.html', '_blank');
         });
-
         localFilesSection.querySelector('.empty-list-message')?.remove();
         localFilesSection.appendChild(docElement);
-        console.log(`DocumentManager: Documento local '${file.name}' cargado para la sesión.`);
+        const texto = prompt('Texto para la nota:', file.name) || file.name;
+        uploadPdfNote(file, texto).then(() => loadDocumentsForCurrentSubject(null, localFilesSection));
         return;
     }
-
     const reader = new FileReader();
     reader.onload = (e) => {
         const fileData = e.target.result;
-
         const docElement = document.createElement('div');
         docElement.classList.add('document-item', 'local-doc');
         docElement.dataset.fileObject = 'false';
@@ -236,10 +149,7 @@ export function handleLocalDocument(file, localFilesSection) {
         docElement.dataset.type = file.type;
         docElement.dataset.name = file.name;
         docElement.draggable = true;
-        docElement.innerHTML = `
-            <span class="material-symbols-outlined">${getFileIcon(file.type)}</span>
-            <p>${file.name}</p>
-        `;
+        docElement.innerHTML = `<span class="material-symbols-outlined">${getFileIcon(file.type)}</span><p>${file.name}</p>`;
         docElement.addEventListener('click', () => {
             if (file.type === 'text/plain') {
                 alert(`Contenido de ${file.name}:\n\n${fileData}`);
@@ -247,16 +157,10 @@ export function handleLocalDocument(file, localFilesSection) {
                 alert(`No hay visor integrado para este tipo de documento local: ${file.type}.`);
             }
         });
-
         localFilesSection.querySelector('.empty-list-message')?.remove();
         localFilesSection.appendChild(docElement);
-        console.log(`DocumentManager: Documento local '${file.name}' cargado para la sesión.`);
     };
-
-    reader.onerror = () => {
-        alert('Error al leer el archivo seleccionado.');
-    };
-
+    reader.onerror = () => { alert('Error al leer el archivo seleccionado.'); };
     if (file.type.startsWith('image/') || file.type === 'text/plain') {
         reader.readAsDataURL(file);
     } else {
