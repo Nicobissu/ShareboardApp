@@ -744,6 +744,38 @@ body:has(.app-container) .login-container {
     font-size: 32px;
 }
 
+/* ------------------------------------------- */
+/* PDF Viewer Page */
+/* ------------------------------------------- */
+body.viewer-page {
+    align-items: stretch;
+}
+
+#documentViewerPage {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100vh;
+    box-sizing: border-box;
+}
+
+#documentViewerPage .pdf-canvas-container {
+    flex: 1;
+    overflow: auto;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+#documentViewerPage #pdfViewerCanvas {
+    width: auto;
+    height: auto;
+    max-width: 100%;
+    background-color: #fdfdfd;
+    display: block;
+    border: none;
+}
+
 
 /* ------------------------------------------- */
 /* Barra de Herramientas Flotante (Derecha) */
