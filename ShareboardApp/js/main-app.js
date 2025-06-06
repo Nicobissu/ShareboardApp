@@ -42,8 +42,21 @@ document.addEventListener('DOMContentLoaded', () => {
     const capturedImage = sessionStorage.getItem('capturedImage');
     if (capturedImage && canvas) {
         fabric.Image.fromURL(capturedImage, (img) => {
+            if (!img.width || !img.height) {
+                console.error('Imagen capturada inválida');
+                sessionStorage.removeItem('capturedImage');
+                return;
+            }
+
+            const maxW = canvas.width * 0.8;
+            const maxH = canvas.height * 0.8;
+            let scale = 1;
+            if (img.width > maxW || img.height > maxH) {
+                scale = Math.min(maxW / img.width, maxH / img.height);
+            }
+
             const center = canvas.getCenter();
-            img.set({ left: center.left, top: center.top, originX: 'center', originY: 'center', scaleX: 0.5, scaleY: 0.5, selectable: true, evented: true });
+            img.set({ left: center.left, top: center.top, originX: 'center', originY: 'center', scaleX: scale, scaleY: scale, selectable: true, evented: true });
             canvas.add(img);
             canvas.setActiveObject(img);
             canvas.renderAll();
