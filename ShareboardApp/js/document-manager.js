@@ -202,42 +202,26 @@ export function handleLocalDocument(file, localFilesSection) {
     if (!file) return;
 
     if (file.type === 'application/pdf') {
-        const reader = new FileReader();
-        reader.onload = () => {
-            const base64Data = arrayBufferToBase64(reader.result);
+        const objectUrl = URL.createObjectURL(file);
 
-            const docElement = document.createElement('div');
-            docElement.classList.add('document-item', 'local-doc');
-            docElement.dataset.fileObject = 'false';
-            docElement.dataset.type = file.type;
-            docElement.dataset.name = file.name;
-            docElement.draggable = true;
-            docElement.innerHTML = `
-                <span class="material-symbols-outlined">${getFileIcon(file.type)}</span>
-                <p>${file.name}</p>
-            `;
-            docElement.addEventListener('click', () => {
-                try {
-                    sessionStorage.setItem('currentPdfData', JSON.stringify({ type: 'ArrayBuffer', data: base64Data }));
-                    window.location.href = 'pdf-viewer-page.html';
-                } catch (e) {
-                    if (e instanceof DOMException && (e.name === 'QuotaExceededError' || e.code === 22)) {
-                        alert('No se pudo guardar el PDF en la sesión. Intenta con un PDF más pequeño.');
-                    } else {
-                        console.error('DocumentManager: Error al guardar el PDF en la sesión:', e);
-                        alert('Error inesperado al guardar el PDF en la sesión.');
-                    }
-                }
-            });
+        const docElement = document.createElement('div');
+        docElement.classList.add('document-item', 'local-doc');
+        docElement.dataset.fileObject = 'false';
+        docElement.dataset.type = file.type;
+        docElement.dataset.name = file.name;
+        docElement.draggable = true;
+        docElement.innerHTML = `
+            <span class="material-symbols-outlined">${getFileIcon(file.type)}</span>
+            <p>${file.name}</p>
+        `;
+        docElement.addEventListener('click', () => {
+            sessionStorage.setItem('currentPdfData', JSON.stringify({ type: 'ObjectURL', url: objectUrl }));
+            window.open('pdf-viewer-page.html', '_blank');
+        });
 
-            localFilesSection.querySelector('.empty-list-message')?.remove();
-            localFilesSection.appendChild(docElement);
-            console.log(`DocumentManager: Documento local '${file.name}' cargado para la sesión.`);
-        };
-        reader.onerror = () => {
-            alert('Error al leer el archivo seleccionado.');
-        };
-        reader.readAsArrayBuffer(file);
+        localFilesSection.querySelector('.empty-list-message')?.remove();
+        localFilesSection.appendChild(docElement);
+        console.log(`DocumentManager: Documento local '${file.name}' cargado para la sesión.`);
         return;
     }
 
