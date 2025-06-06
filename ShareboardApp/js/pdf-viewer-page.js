@@ -196,6 +196,8 @@ document.addEventListener('DOMContentLoaded', () => {
             } else if (pdfData.type === 'ObjectURL') {
                 objectUrlToRevoke = pdfData.url;
                 loadAndRenderPdf({ url: pdfData.url });
+            } else if (pdfData.type === 'URL') {
+                loadAndRenderPdf({ url: pdfData.url });
             } else {
                 console.error('PDF Viewer: Tipo de datos de PDF no reconocido en sessionStorage.');
                 alert('Error al cargar el PDF desde la sesión. Formato no reconocido.');
