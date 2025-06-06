@@ -2,7 +2,7 @@
 
 import { initializeCanvas, canvas, viewport } from './canvas-core.js';
 import { saveCanvasState, loadCanvasState, setPersistenceUserId, currentSubjectId } from './canvas-persistence.js';
-import { saveCanvasToHistory } from './canvas-history.js';
+import { saveCanvasToHistory, setupAutoSaveEvents } from './canvas-history.js';
 import { initializeTools, initTools } from './canvas-tools.js';
 import { updateUserStorageUsage, uploadImageAndAddToCanvas, loadDocumentsForCurrentSubject, handleLocalDocument, addDocumentToCanvas } from './document-manager.js';
 
@@ -31,6 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initializeCanvas(mainCanvasContainer);
     initTools(canvas);
     loadCanvasState(currentSubjectId);
+    setupAutoSaveEvents();
 
     const isTextEditingFlagCallback = (isEditing) => { isTextEditingFromTools = isEditing; };
     initializeTools(toolBtns, isTextEditingFlagCallback);

@@ -7,6 +7,23 @@ export let canvasHistory = [];
 export let historyPointer = -1;
 export let isRedoing = false;
 
+// Temporizador para el guardado automático (debounce)
+let autoSaveTimer = null;
+
+// Configura eventos que guardan el estado del lienzo
+export function setupAutoSaveEvents() {
+    if (!canvas) {
+        console.warn('History: Canvas no inicializado para autosave.');
+        return;
+    }
+    const debouncedSave = () => {
+        clearTimeout(autoSaveTimer);
+        autoSaveTimer = setTimeout(saveCanvasToHistory, 300);
+    };
+    canvas.on('object:modified', debouncedSave);
+    canvas.on('path:created', debouncedSave);
+}
+
 export function resetHistory() {
     canvasHistory.length = 0;
     historyPointer = -1;
