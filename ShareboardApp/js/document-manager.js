@@ -192,7 +192,7 @@ export function addDocumentToCanvas(fileData, clientX, clientY) {
 export function handleLocalDocument(file, localFilesSection) {
     if (!file) return;
 
-    const MAX_LOCAL_FILE_SIZE_MB = 10;
+    const MAX_LOCAL_FILE_SIZE_MB = 20;
     if (file.size > MAX_LOCAL_FILE_SIZE_MB * 1024 * 1024) {
         alert(`El documento '${file.name}' excede el tamaño máximo permitido de ${MAX_LOCAL_FILE_SIZE_MB} MB para carga local.`);
         return;
