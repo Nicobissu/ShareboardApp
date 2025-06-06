@@ -9,29 +9,18 @@ upload PDFs or capture PDF pages onto the board.
 
 ## Requirements
 
-- Node.js or Python to serve the static files locally using a lightweight web
-  server such as [http-server](https://www.npmjs.com/package/http-server) or
-  `python -m http.server`.
 - Node.js with the dependencies listed in `backend/package.json` to run the
-  local API server.
+  local server that now serves both the API and the web application.
 
 ## Setup
 
 1. Clone this repository.
 2. From the `backend` directory run `npm install` and then `node server.js` to
-   start the local API on `http://localhost:3000`.
-3. From the `ShareboardApp` directory, start a local web server:
-
-   ```bash
-   npx http-server . -p 8080
-   # or
-   python3 -m http.server 8080
-   ```
-
-4. Open `http://localhost:8080` in your browser and register an account or log
+   start the server on `http://localhost:3000`.
+3. Open `http://localhost:3000` in your browser and register an account or log
    in with an existing one.
 
--## Overview
+## Overview
 
 - **Authentication** – Registration, login and password reset are handled
   localmente sin servicios externos.

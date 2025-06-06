@@ -9,7 +9,9 @@ const PORT = 3000;
 
 app.use(cors());
 app.use(express.json());
-app.use(express.static(path.join(__dirname, 'uploads')));
+// Servir la aplicación web y los archivos subidos desde el mismo servidor
+app.use(express.static(path.join(__dirname, '..')));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Configuración de subida de archivos
 const storage = multer.diskStorage({
