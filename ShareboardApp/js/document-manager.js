@@ -3,8 +3,9 @@
 import { canvas } from './canvas-core.js';
 import { saveCanvasToHistory } from './canvas-history.js';
 
-// Utilizar una ruta relativa para funcionar en el mismo host
-const API_URL = '/notas';
+// Dirección base del backend en desarrollo local
+const BASE_URL = 'http://localhost:3000';
+const API_URL = `${BASE_URL}/notas`;
 
 export async function updateUserStorageUsage() {
     // Sin backend remoto que calcule almacenamiento
@@ -53,7 +54,7 @@ export async function loadDocumentsForCurrentSubject(_, localFilesSection) {
         const element = document.createElement('div');
         element.classList.add('document-item');
         element.dataset.fileObject = 'true';
-        element.dataset.url = `/uploads/${note.pdf}`;
+        element.dataset.url = `${BASE_URL}/uploads/${note.pdf}`;
         element.dataset.type = 'application/pdf';
         element.dataset.name = note.texto;
         element.draggable = true;

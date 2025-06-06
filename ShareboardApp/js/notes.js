@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // Usar una ruta relativa ya que el frontend y el API se sirven juntos
-    const API_URL = '/notas';
+    // Dirección base del backend en desarrollo local
+    const BASE_URL = 'http://localhost:3000';
+    const API_URL = `${BASE_URL}/notas`;
     const form = document.getElementById('notaForm');
     const lista = document.getElementById('listaNotas');
     const textoInput = document.getElementById('notaTexto');
@@ -19,7 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 if (nota.pdf) {
                     const enlace = document.createElement('a');
-                    enlace.href = `/uploads/${nota.pdf}`;
+                    enlace.href = `${BASE_URL}/uploads/${nota.pdf}`;
                     enlace.textContent = 'Ver PDF';
                     enlace.target = '_blank';
                     item.appendChild(enlace);
