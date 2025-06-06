@@ -93,7 +93,13 @@ document.addEventListener('DOMContentLoaded', () => {
         // Cancelar cualquier render previo para evitar solapamientos
         if (renderTask) {
             renderTask.cancel();
-            try { await renderTask.promise; } catch (e) {}
+            try {
+                await renderTask.promise;
+            } catch (e) {
+                if (!(e instanceof pdfjsLib.RenderingCancelledException)) {
+                    console.error('PDF Viewer: error al cancelar render', e);
+                }
+            }
         }
 
         pageNum = num;
@@ -102,29 +108,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const page = await pdfDoc.getPage(pageNum);
 
-        // Dimensiones del contenedor disponible
-        const viewerWidth = pdfCanvasContainer.offsetWidth;
-        const viewerHeight = pdfCanvasContainer.offsetHeight;
+        // Viewports para renderizado de alta resolución y visualización sin escalado CSS
+        const displayViewport = page.getViewport({ scale: 1 });
+        const renderViewport = page.getViewport({ scale: pdfCanvasResolutionScale });
 
-        // Viewport base para conocer el tamaño natural de la página
-        const baseViewport = page.getViewport({ scale: 1 });
-
-        // Calcular escala para que la página quepa completa en el contenedor
-        let scaleX = viewerWidth / baseViewport.width;
-        let scaleY = viewerHeight > 0 ? viewerHeight / baseViewport.height : scaleX;
-        let displayScale = Math.min(scaleX, scaleY);
-
-        const displayViewport = page.getViewport({ scale: displayScale });
-        const renderViewport = page.getViewport({ scale: displayScale * pdfCanvasResolutionScale });
-
-        console.log(`PDF Viewer: Escala de visualización calculada: ${displayScale}`);
-        console.log(`PDF Viewer: Viewport final (para mostrar): ${displayViewport.width}x${displayViewport.height}`);
+        console.log(`PDF Viewer: Viewport display: ${displayViewport.width}x${displayViewport.height}`);
+        console.log(`PDF Viewer: Viewport render (escala ${pdfCanvasResolutionScale}): ${renderViewport.width}x${renderViewport.height}`);
 
         const canvasContext = pdfViewerCanvas.getContext('2d', { willReadFrequently: true });
 
-        // Ajustar tamaño interno para alta resolución y tamaño visual para el contenedor
-        pdfViewerCanvas.height = renderViewport.height;
+        // Ajustar tamaño interno para alta resolución y tamaño visual sin escalado
         pdfViewerCanvas.width = renderViewport.width;
+        pdfViewerCanvas.height = renderViewport.height;
         pdfViewerCanvas.style.width = `${displayViewport.width}px`;
         pdfViewerCanvas.style.height = `${displayViewport.height}px`;
 
