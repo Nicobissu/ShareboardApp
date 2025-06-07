@@ -53,16 +53,33 @@ export async function loadDocumentsForCurrentSubject(_, localFilesSection) {
     for (const note of notes) {
         const element = document.createElement('div');
         element.classList.add('document-item');
+        element.dataset.id = note.id;
         element.dataset.fileObject = 'true';
         element.dataset.url = `${BASE_URL}/${note.pdf}`;
         element.dataset.type = 'application/pdf';
         element.dataset.name = note.texto;
         element.draggable = true;
         element.innerHTML = `<span class="material-symbols-outlined">description</span><p>${note.texto}</p>`;
+
         element.addEventListener('click', () => {
             sessionStorage.setItem('currentPdfData', JSON.stringify({ type: 'URL', url: element.dataset.url }));
             window.open('pdf-viewer-page.html', '_blank');
         });
+
+        const delBtn = document.createElement('button');
+        delBtn.classList.add('delete-doc-btn', 'material-symbols-outlined');
+        delBtn.textContent = 'delete';
+        delBtn.addEventListener('click', async (e) => {
+            e.stopPropagation();
+            if (!confirm('¿Eliminar este PDF?')) return;
+            try {
+                await fetch(`${API_URL}/${note.id}`, { method: 'DELETE' });
+                loadDocumentsForCurrentSubject(null, localFilesSection);
+            } catch (err) {
+                console.error('Error al eliminar nota:', err);
+            }
+        });
+        element.appendChild(delBtn);
         localFilesSection.appendChild(element);
     }
 }
