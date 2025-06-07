@@ -2,6 +2,7 @@ const express = require('express');
 const multer = require('multer');
 const cors = require('cors');
 const path = require('path');
+const fs = require('fs');
 const db = require('./database');
 
 const app = express();
@@ -42,6 +43,31 @@ app.post('/notas', upload.single('pdf'), (req, res) => {
   db.run('INSERT INTO notas (texto, pdf) VALUES (?, ?)', [texto, pdf], function (err) {
     if (err) return res.status(500).json({ error: err.message });
     res.json({ id: this.lastID, texto, pdf });
+  });
+});
+
+// Eliminar una nota y su PDF
+app.delete('/notas/:id', (req, res) => {
+  const { id } = req.params;
+  db.get('SELECT pdf FROM notas WHERE id = ?', [id], (err, row) => {
+    if (err) return res.status(500).json({ error: err.message });
+    if (!row) return res.status(404).json({ error: 'Nota no encontrada' });
+
+    const pdfPath = row.pdf ? path.join(__dirname, row.pdf) : null;
+
+    db.run('DELETE FROM notas WHERE id = ?', [id], (err) => {
+      if (err) return res.status(500).json({ error: err.message });
+
+      if (pdfPath) {
+        fs.unlink(pdfPath, (fsErr) => {
+          if (fsErr && fsErr.code !== 'ENOENT') {
+            console.error('Error al eliminar archivo:', fsErr);
+          }
+        });
+      }
+
+      res.json({ success: true });
+    });
   });
 });
 
