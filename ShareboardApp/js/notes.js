@@ -25,10 +25,26 @@ document.addEventListener('DOMContentLoaded', () => {
                     enlace.target = '_blank';
                     item.appendChild(enlace);
                 }
+
+                const delBtn = document.createElement('button');
+                delBtn.textContent = 'Eliminar';
+                delBtn.addEventListener('click', () => eliminarNota(nota.id));
+                item.appendChild(delBtn);
+
                 lista.appendChild(item);
             });
         } catch (err) {
             console.error('Error al obtener notas:', err);
+        }
+    };
+
+    const eliminarNota = async (id) => {
+        if (!confirm('¿Eliminar este PDF?')) return;
+        try {
+            await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
+            cargarNotas();
+        } catch (err) {
+            console.error('Error al eliminar nota:', err);
         }
     };
 
