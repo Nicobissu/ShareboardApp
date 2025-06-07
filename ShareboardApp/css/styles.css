@@ -584,6 +584,17 @@ body:has(.app-container) .login-container {
     font-size: 20px;
     color: #8c52ff;
 }
+.document-list-section .document-item .delete-doc-btn {
+    margin-left: auto;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #f44336;
+    font-size: 20px;
+}
+.document-list-section .document-item .delete-doc-btn:hover {
+    color: #d32f2f;
+}
 .document-list-section .empty-list-message {
     font-size: 0.85em;
     color: #aaa;
