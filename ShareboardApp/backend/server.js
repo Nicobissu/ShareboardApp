@@ -9,10 +9,10 @@ const PORT = 3000;
 
 app.use(cors());
 app.use(express.json());
-// Servir la aplicación web y los archivos subidos desde el mismo servidor
-app.use(express.static(path.join(__dirname, '..')));
 // Servir la carpeta de uploads directamente para acceder a los PDFs por URL
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+// Servir la aplicación web y los archivos subidos desde el mismo servidor
+app.use(express.static(path.join(__dirname, '..')));
 
 // Configuración de subida de archivos
 const storage = multer.diskStorage({
