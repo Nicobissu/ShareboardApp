@@ -6,6 +6,13 @@ import { uploadImageAndAddToCanvas } from './document-manager.js';
 // Referencia al canvas de Fabric.js proporcionada externamente
 let canvas = null;
 
+let brushColorInput;
+let brushSizeInput;
+let boldBtn;
+let italicBtn;
+let underlineBtn;
+let fontSizeSelect;
+
 // Inicializa la referencia al canvas. Debe llamarse una vez que el lienzo esté creado.
 export function initTools(canvasInstance) {
     canvas = canvasInstance;
@@ -20,6 +27,62 @@ export function initializeTools(toolBtns, isTextEditingFlagCallback) {
         console.error('Tools: Canvas no inicializado. No se pueden inicializar las herramientas.');
         return;
     }
+
+    brushColorInput = document.getElementById('brushColor');
+    brushSizeInput = document.getElementById('brushSize');
+    boldBtn = document.getElementById('boldBtn');
+    italicBtn = document.getElementById('italicBtn');
+    underlineBtn = document.getElementById('underlineBtn');
+    fontSizeSelect = document.getElementById('fontSizeSelect');
+
+    brushColorInput.addEventListener('change', () => {
+        if (canvas.freeDrawingBrush) {
+            canvas.freeDrawingBrush.color = brushColorInput.value;
+        }
+    });
+
+    brushSizeInput.addEventListener('input', () => {
+        if (canvas.freeDrawingBrush) {
+            canvas.freeDrawingBrush.width = parseInt(brushSizeInput.value, 10);
+        }
+    });
+
+    const applyFormat = (prop, value) => {
+        const obj = canvas.getActiveObject();
+        if (obj && obj.isType('i-text')) {
+            obj.set(prop, value);
+            canvas.renderAll();
+            saveCanvasToHistory();
+        }
+    };
+
+    boldBtn.addEventListener('click', () => {
+        const obj = canvas.getActiveObject();
+        if (obj && obj.isType('i-text')) {
+            const newVal = obj.fontWeight === 'bold' ? 'normal' : 'bold';
+            applyFormat('fontWeight', newVal);
+        }
+    });
+
+    italicBtn.addEventListener('click', () => {
+        const obj = canvas.getActiveObject();
+        if (obj && obj.isType('i-text')) {
+            const newVal = obj.fontStyle === 'italic' ? 'normal' : 'italic';
+            applyFormat('fontStyle', newVal);
+        }
+    });
+
+    underlineBtn.addEventListener('click', () => {
+        const obj = canvas.getActiveObject();
+        if (obj && obj.isType('i-text')) {
+            applyFormat('underline', !obj.underline);
+        }
+    });
+
+    fontSizeSelect.addEventListener('change', () => {
+        const size = parseInt(fontSizeSelect.value, 10);
+        applyFormat('fontSize', size);
+    });
 
     // Eventos de Fabric.js para controlar el modo de edición de texto
     canvas.on('text:editing:entered', () => {
@@ -67,9 +130,9 @@ export function initializeTools(toolBtns, isTextEditingFlagCallback) {
         const iText = new fabric.IText('Haz doble clic para editar', {
             left: pointer.x,
             top: pointer.y,
-            fontFamily: 'Roboto', 
+            fontFamily: 'Roboto',
             fill: '#000000',
-            fontSize: 24,
+            fontSize: parseInt(fontSizeSelect.value, 10) || 24,
             selectable: true,
             editable: true // Asegurarse de que sea editable
         });
@@ -121,8 +184,10 @@ export function initializeTools(toolBtns, isTextEditingFlagCallback) {
                     console.log('Tools: Activando Lápiz');
                     canvas.isDrawingMode = true;
                     canvas.freeDrawingBrush = new fabric.PencilBrush(canvas);
-                    canvas.freeDrawingBrush.width = 5;
-                    canvas.freeDrawingBrush.color = '#000000';
+                    canvas.freeDrawingBrush.width = parseInt(brushSizeInput.value, 10) || 5;
+                    canvas.freeDrawingBrush.color = brushColorInput.value || '#000000';
+                    brushSizeInput.value = canvas.freeDrawingBrush.width;
+                    brushColorInput.value = canvas.freeDrawingBrush.color;
                     canvas.defaultCursor = 'crosshair';
                     canvas.hoverCursor = 'crosshair';
                     break;
@@ -130,8 +195,10 @@ export function initializeTools(toolBtns, isTextEditingFlagCallback) {
                     console.log('Tools: Activando Marcador');
                     canvas.isDrawingMode = true;
                     canvas.freeDrawingBrush = new fabric.PencilBrush(canvas); // Usar PencilBrush
-                    canvas.freeDrawingBrush.width = 15;
-                    canvas.freeDrawingBrush.color = 'rgba(0, 255, 0, 0.3)';
+                    canvas.freeDrawingBrush.width = parseInt(brushSizeInput.value, 10) || 15;
+                    canvas.freeDrawingBrush.color = brushColorInput.value || 'rgba(0, 255, 0, 0.3)';
+                    brushSizeInput.value = canvas.freeDrawingBrush.width;
+                    brushColorInput.value = canvas.freeDrawingBrush.color;
                     canvas.defaultCursor = 'crosshair';
                     canvas.hoverCursor = 'crosshair';
                     break;
@@ -139,8 +206,9 @@ export function initializeTools(toolBtns, isTextEditingFlagCallback) {
                     console.log('Tools: Activando Borrador');
                     canvas.isDrawingMode = true;
                     canvas.freeDrawingBrush = new fabric.PencilBrush(canvas); // Usar PencilBrush
-                    canvas.freeDrawingBrush.width = 20;
+                    canvas.freeDrawingBrush.width = parseInt(brushSizeInput.value, 10) || 20;
                     canvas.freeDrawingBrush.globalCompositeOperation = 'destination-out'; // Modo borrador
+                    brushSizeInput.value = canvas.freeDrawingBrush.width;
                     break;
                 case 'select': // Selector (cursor)
                     console.log('Tools: Activando Selector');

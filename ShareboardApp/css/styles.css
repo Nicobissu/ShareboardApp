@@ -836,6 +836,21 @@ body.viewer-page {
     color: white;
 }
 
+.toolbar-right .tool-options,
+.toolbar-right .text-options {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.toolbar-right .text-options .format-btn {
+    background: none;
+    border: none;
+    padding: 6px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
 /* ------------------------------------------- */
 /* Barra Inferior (Bottom Bar) */
 /* ------------------------------------------- */
@@ -893,6 +908,16 @@ body.viewer-page {
 
     .toolbar-right .tool-btn {
         padding: 8px;
+    }
+
+    .toolbar-right .tool-options,
+    .toolbar-right .text-options {
+        flex-direction: row;
+        margin-top: 4px;
+    }
+
+    .toolbar-right .tool-options input[type="range"] {
+        width: 80px;
     }
 
     .toolbar-right .tool-btn .material-symbols-outlined {
