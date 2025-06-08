@@ -61,8 +61,41 @@
                     <canvas id="mainCanvas"></canvas>
                 </div>
                 
-                <div class="toolbar-right">
-                    <button class="tool-btn active" data-tool="select"><span class="material-symbols-outlined">select_all</span></button> <button class="tool-btn" data-tool="edit"><span class="material-symbols-outlined">edit</span></button> <button class="tool-btn" data-tool="text"><span class="material-symbols-outlined">text_fields</span></button> <button class="tool-btn" data-tool="image"><span class="material-symbols-outlined">image</span></button> <button class="tool-btn" data-tool="mic"><span class="material-symbols-outlined">mic</span></button> <button class="tool-btn" data-tool="more"><span class="material-symbols-outlined">more_horiz</span></button> </div>
+                    <div class="toolbar-right">
+                        <div class="tool-group">
+                            <button class="tool-btn active" data-tool="select"><span class="material-symbols-outlined">select_all</span></button>
+                        </div>
+                        <div class="tool-group">
+                            <button class="tool-btn" data-tool="edit"><span class="material-symbols-outlined">edit</span></button>
+                            <div class="tool-menu brush-menu">
+                                <input type="color" id="brushColor" value="#000000" title="Color del pincel">
+                                <input type="range" id="brushSize" min="1" max="50" value="5" title="Grosor del pincel">
+                            </div>
+                        </div>
+                        <div class="tool-group">
+                            <button class="tool-btn" data-tool="text"><span class="material-symbols-outlined">text_fields</span></button>
+                            <div class="tool-menu text-menu">
+                                <button id="boldBtn" class="format-btn" title="Negrita"><span class="material-symbols-outlined">format_bold</span></button>
+                                <button id="italicBtn" class="format-btn" title="Cursiva"><span class="material-symbols-outlined">format_italic</span></button>
+                                <button id="underlineBtn" class="format-btn" title="Subrayado"><span class="material-symbols-outlined">format_underlined</span></button>
+                                <select id="fontSizeSelect" title="Tamaño de letra">
+                                    <option value="16">16</option>
+                                    <option value="24" selected>24</option>
+                                    <option value="32">32</option>
+                                    <option value="48">48</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="tool-group">
+                            <button class="tool-btn" data-tool="image"><span class="material-symbols-outlined">image</span></button>
+                        </div>
+                        <div class="tool-group">
+                            <button class="tool-btn" data-tool="mic"><span class="material-symbols-outlined">mic</span></button>
+                        </div>
+                        <div class="tool-group">
+                            <button class="tool-btn" data-tool="more"><span class="material-symbols-outlined">more_horiz</span></button>
+                        </div>
+                    </div>
             </section>
         </main>
 

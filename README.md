@@ -26,6 +26,7 @@ upload PDFs or capture PDF pages onto the board.
   localmente sin servicios externos.
 - **Whiteboard** – A Fabric.js canvas provides drawing tools, image support and
   undo/redo functionality.
+- **Formatting** – Tool-specific menus let you adjust brush color and size or format text (bold, italics, underline, font size).
 - **Documents** – Upload PDFs or text files, view them in a dedicated page and
   capture pages onto the canvas for annotation.
 
